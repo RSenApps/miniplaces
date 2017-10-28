@@ -46,8 +46,8 @@ loader_train = DataLoaderH5(**opt_data_train)
 loader_val = DataLoaderH5(**opt_data_val)
 
 # tf Graph input
-x = tf.placeholder(tf.float32, [None, fine_size, fine_size, c])
-y = tf.placeholder(tf.int64, None)
+x = tf.placeholder(tf.float16, [None, fine_size, fine_size, c])
+y = tf.placeholder(tf.float16, None)
 #keep_dropout = tf.placeholder(tf.float32)
 train_mode = tf.placeholder(tf.bool)
 
@@ -63,8 +63,8 @@ cost = -tf.reduce_sum(y*tf.log(logits))
 train_optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(cost)
 
 # Evaluate model
-accuracy1 = tf.reduce_mean(tf.cast(tf.nn.in_top_k(logits, y, 1), tf.float32))
-accuracy5 = tf.reduce_mean(tf.cast(tf.nn.in_top_k(logits, y, 5), tf.float32))
+accuracy1 = tf.reduce_mean(tf.cast(tf.nn.in_top_k(logits, y, 1), tf.float16))
+accuracy5 = tf.reduce_mean(tf.cast(tf.nn.in_top_k(logits, y, 5), tf.float16))
 
 # define initialization
 init = tf.global_variables_initializer()
