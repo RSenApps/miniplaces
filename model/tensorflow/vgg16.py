@@ -84,7 +84,7 @@ class Vgg16:
 
         self.fc8 = self.fc_layer(self.relu7, 4096, 1000, "fc8")
 
-        self.prob = tf.nn.softmax(self.fc8, name="prob")
+        #self.prob = tf.nn.softmax(self.fc8, name="prob")
 
         self.data_dict = None
 

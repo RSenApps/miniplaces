@@ -47,20 +47,20 @@ loader_val = DataLoaderH5(**opt_data_val)
 
 # tf Graph input
 x = tf.placeholder(tf.float32, [None, fine_size, fine_size, c])
-y = tf.placeholder(tf.int64, None)
+y = tf.placeholder(tf.float32, None)
 #keep_dropout = tf.placeholder(tf.float32)
 train_mode = tf.placeholder(tf.bool)
 
 # Construct model
 vgg = vgg16.Vgg16()
 vgg.build(x, train_mode)
-logits = vgg.prob
+logits = vgg.fc8
 
 # Define loss and optimizer
-#loss = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(labels=y, logits=logits))
-cost = -tf.reduce_sum(y*tf.log(logits))
+loss = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(labels=y, logits=logits))
+#cost = -tf.reduce_sum(y*tf.log(logits))
 
-train_optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(cost)
+train_optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(loss)
 
 # Evaluate model
 accuracy1 = tf.reduce_mean(tf.cast(tf.nn.in_top_k(logits, y, 1), tf.float32))
