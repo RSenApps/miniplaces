@@ -42,6 +42,7 @@ class Vgg16:
         ])
         assert bgr.get_shape().as_list()[1:] == [224, 224, 3]
         '''
+        x = tf.cast(x, tf.float16)
         self.conv1_1 = self.conv_layer(x, 3, 64, "conv1_1")
         #self.conv1_2 = self.conv_layer(self.conv1_1, 64, 64, "conv1_2")
         self.pool1 = self.max_pool(self.conv1_1, 'pool1')
