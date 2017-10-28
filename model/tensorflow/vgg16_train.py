@@ -47,7 +47,7 @@ loader_val = DataLoaderH5(**opt_data_val)
 
 # tf Graph input
 x = tf.placeholder(tf.float32, [None, fine_size, fine_size, c])
-y = tf.placeholder(tf.float32, None)
+y = tf.placeholder(tf.int64, None)
 #keep_dropout = tf.placeholder(tf.float32)
 train_mode = tf.placeholder(tf.bool)
 
