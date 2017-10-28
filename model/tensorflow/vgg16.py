@@ -99,7 +99,7 @@ class Vgg16:
 
         self.data_dict = None
 
-    def batch_norm_layer(x, train_phase, scope_bn):
+    def batch_norm_layer(self, x, train_phase, scope_bn):
         return batch_norm(x, decay=0.9, center=True, scale=True,
                     updates_collections=None,
                     is_training=train_phase,
