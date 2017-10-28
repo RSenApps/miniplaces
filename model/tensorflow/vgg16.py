@@ -140,7 +140,7 @@ class Vgg16:
         if self.trainable:
             var = tf.Variable(value, name=var_name)
         else:
-            var = tf.constant(value, dtype=tf.float32, name=var_name)
+            var = tf.constant(value, dtype=tf.float16, name=var_name)
 
         self.var_dict[(name, idx)] = var
 
