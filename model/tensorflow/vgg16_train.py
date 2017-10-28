@@ -20,6 +20,7 @@ path_save = 'vgg16'
 start_from = ''
 
 
+
 # Construct dataloader
 opt_data_train = {
     'data_h5': 'miniplaces_256_train.h5',

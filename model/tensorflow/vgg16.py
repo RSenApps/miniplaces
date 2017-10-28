@@ -2,6 +2,7 @@ import tensorflow as tf
 
 import numpy as np
 from functools import reduce
+from tensorflow.contrib.layers.python.layers import batch_norm
 
 VGG_MEAN = [103.939, 116.779, 123.68]
 
@@ -43,40 +44,50 @@ class Vgg16:
         assert bgr.get_shape().as_list()[1:] == [224, 224, 3]
         '''
         self.conv1_1 = self.conv_layer(x, 3, 64, "conv1_1")
+        self.batch1_1 = self.batch_norm_layer(self.conv1_1, train_mode,'bn1')
         #self.conv1_2 = self.conv_layer(self.conv1_1, 64, 64, "conv1_2")
-        self.pool1 = self.max_pool(self.conv1_2, 'pool1')
+        self.pool1 = self.max_pool(self.batch1_1, 'pool1')
 
         self.conv2_1 = self.conv_layer(self.pool1, 64, 128, "conv2_1")
+        self.batch2_1 = self.batch_norm_layer(self.conv2_1, train_mode,'bn2')
         #self.conv2_2 = self.conv_layer(self.conv2_1, 128, 128, "conv2_2")
-        self.pool2 = self.max_pool(self.conv2_2, 'pool2')
+        self.pool2 = self.max_pool(self.batch2_1, 'pool2')
 
         self.conv3_1 = self.conv_layer(self.pool2, 128, 256, "conv3_1")
-        self.conv3_2 = self.conv_layer(self.conv3_1, 256, 256, "conv3_2")
+        self.batch3_1 = self.batch_norm_layer(self.conv3_1, train_mode,'bn3_1')
+        self.conv3_2 = self.conv_layer(self.batch3_1, 256, 256, "conv3_2")
+        self.batch3_2 = self.batch_norm_layer(self.conv3_2, train_mode,'bn3_2')
         #self.conv3_3 = self.conv_layer(self.conv3_2, 256, 256, "conv3_3")
         #self.conv3_4 = self.conv_layer(self.conv3_3, 256, 256, "conv3_4")
-        self.pool3 = self.max_pool(self.conv3_4, 'pool3')
+        self.pool3 = self.max_pool(self.batch3_2, 'pool3')
 
         self.conv4_1 = self.conv_layer(self.pool3, 256, 512, "conv4_1")
-        self.conv4_2 = self.conv_layer(self.conv4_1, 512, 512, "conv4_2")
+        self.batch4_1 = self.batch_norm_layer(self.conv4_1, train_mode,'bn4_1')
+        self.conv4_2 = self.conv_layer(self.batch4_1, 512, 512, "conv4_2")
+        self.batch4_2 = self.batch_norm_layer(self.conv4_2, train_mode,'bn4_2')
         #self.conv4_3 = self.conv_layer(self.conv4_2, 512, 512, "conv4_3")
         #self.conv4_4 = self.conv_layer(self.conv4_3, 512, 512, "conv4_4")
-        self.pool4 = self.max_pool(self.conv4_4, 'pool4')
+        self.pool4 = self.max_pool(self.batch4_2, 'pool4')
 
         self.conv5_1 = self.conv_layer(self.pool4, 512, 512, "conv5_1")
-        self.conv5_2 = self.conv_layer(self.conv5_1, 512, 512, "conv5_2")
+        self.batch5_1 = self.batch_norm_layer(self.conv5_1, train_mode,'bn5_1')
+        self.conv5_2 = self.conv_layer(self.batch5_1, 512, 512, "conv5_2")
+        self.batch5_2 = self.batch_norm_layer(self.conv5_2, train_mode,'bn5_2')
         #self.conv5_3 = self.conv_layer(self.conv5_2, 512, 512, "conv5_3")
         #self.conv5_4 = self.conv_layer(self.conv5_3, 512, 512, "conv5_4")
-        self.pool5 = self.max_pool(self.conv5_4, 'pool5')
+        self.pool5 = self.max_pool(self.batch5_2, 'pool5')
 
         self.fc6 = self.fc_layer(self.pool5, 25088, 4096, "fc6")  # 25088 = ((224 // (2 ** 5)) ** 2) * 512
-        self.relu6 = tf.nn.relu(self.fc6)
+        self.batch6 = self.batch_norm_layer(self.fc6, train_mode, 'bn6')
+        self.relu6 = tf.nn.relu(self.batch6)
         if train_mode is not None:
             self.relu6 = tf.cond(train_mode, lambda: tf.nn.dropout(self.relu6, self.dropout), lambda: self.relu6)
         elif self.trainable:
             self.relu6 = tf.nn.dropout(self.relu6, self.dropout)
 
         self.fc7 = self.fc_layer(self.relu6, 4096, 4096, "fc7")
-        self.relu7 = tf.nn.relu(self.fc7)
+        self.batch7 = self.batch_norm_layer(self.fc7, train_mode, 'bn7')
+        self.relu7 = tf.nn.relu(self.batch7)
         if train_mode is not None:
             self.relu7 = tf.cond(train_mode, lambda: tf.nn.dropout(self.relu7, self.dropout), lambda: self.relu7)
         elif self.trainable:
@@ -84,9 +95,15 @@ class Vgg16:
 
         self.fc8 = self.fc_layer(self.relu7, 4096, 1000, "fc8")
 
-        self.prob = tf.nn.softmax(self.fc8, name="prob")
-
         self.data_dict = None
+
+    def batch_norm_layer(x, train_phase, scope_bn):
+        return batch_norm(x, decay=0.9, center=True, scale=True,
+                    updates_collections=None,
+                    is_training=train_phase,
+                    reuse=None,
+                    trainable=True,
+                    scope=scope_bn)
 
     def avg_pool(self, bottom, name):
         return tf.nn.avg_pool(bottom, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='SAME', name=name)
