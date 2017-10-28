@@ -21,13 +21,13 @@ class Vgg16:
         self.trainable = trainable
         self.dropout = dropout
 
-    def build(self, rgb, train_mode=None):
+    def build(self, x, train_mode=None):
         """
         load variable from npy to build the VGG
         :param rgb: rgb image [batch, height, width, 3] values scaled [0, 1]
         :param train_mode: a bool tensor, usually a placeholder: if True, dropout will be turned on
         """
-
+        '''
         rgb_scaled = rgb * 255.0
 
         # Convert RGB to BGR
@@ -41,8 +41,8 @@ class Vgg16:
             red - VGG_MEAN[2],
         ])
         assert bgr.get_shape().as_list()[1:] == [224, 224, 3]
-
-        self.conv1_1 = self.conv_layer(bgr, 3, 64, "conv1_1")
+        '''
+        self.conv1_1 = self.conv_layer(x, 3, 64, "conv1_1")
         self.conv1_2 = self.conv_layer(self.conv1_1, 64, 64, "conv1_2")
         self.pool1 = self.max_pool(self.conv1_2, 'pool1')
 

@@ -53,7 +53,7 @@ keep_dropout = tf.placeholder(tf.float32)
 
 # Construct model
 vgg = vgg16.Vgg16()
-vgg.build(images)
+vgg.build(x)
 logits = vgg.prob
 
 # Define loss and optimizer
