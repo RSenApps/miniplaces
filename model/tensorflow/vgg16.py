@@ -44,29 +44,29 @@ class Vgg16:
         '''
         self.conv1_1 = self.conv_layer(x, 3, 64, "conv1_1")
         #self.conv1_2 = self.conv_layer(self.conv1_1, 64, 64, "conv1_2")
-        self.pool1 = self.max_pool(self.conv1_2, 'pool1')
+        self.pool1 = self.max_pool(self.conv1_1, 'pool1')
 
         self.conv2_1 = self.conv_layer(self.pool1, 64, 128, "conv2_1")
         #self.conv2_2 = self.conv_layer(self.conv2_1, 128, 128, "conv2_2")
-        self.pool2 = self.max_pool(self.conv2_2, 'pool2')
+        self.pool2 = self.max_pool(self.conv2_1, 'pool2')
 
         self.conv3_1 = self.conv_layer(self.pool2, 128, 256, "conv3_1")
         self.conv3_2 = self.conv_layer(self.conv3_1, 256, 256, "conv3_2")
         #self.conv3_3 = self.conv_layer(self.conv3_2, 256, 256, "conv3_3")
         #self.conv3_4 = self.conv_layer(self.conv3_3, 256, 256, "conv3_4")
-        self.pool3 = self.max_pool(self.conv3_4, 'pool3')
+        self.pool3 = self.max_pool(self.conv3_2, 'pool3')
 
         self.conv4_1 = self.conv_layer(self.pool3, 256, 512, "conv4_1")
         self.conv4_2 = self.conv_layer(self.conv4_1, 512, 512, "conv4_2")
         #self.conv4_3 = self.conv_layer(self.conv4_2, 512, 512, "conv4_3")
         #self.conv4_4 = self.conv_layer(self.conv4_3, 512, 512, "conv4_4")
-        self.pool4 = self.max_pool(self.conv4_4, 'pool4')
+        self.pool4 = self.max_pool(self.conv4_2, 'pool4')
 
         self.conv5_1 = self.conv_layer(self.pool4, 512, 512, "conv5_1")
         self.conv5_2 = self.conv_layer(self.conv5_1, 512, 512, "conv5_2")
         #self.conv5_3 = self.conv_layer(self.conv5_2, 512, 512, "conv5_3")
         #self.conv5_4 = self.conv_layer(self.conv5_3, 512, 512, "conv5_4")
-        self.pool5 = self.max_pool(self.conv5_4, 'pool5')
+        self.pool5 = self.max_pool(self.conv5_2, 'pool5')
 
         self.fc6 = self.fc_layer(self.pool5, 25088, 4096, "fc6")  # 25088 = ((224 // (2 ** 5)) ** 2) * 512
         self.relu6 = tf.nn.relu(self.fc6)
