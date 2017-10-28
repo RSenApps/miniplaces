@@ -4,7 +4,7 @@ import tensorflow as tf
 from DataLoader import *
 import vgg16
 # Dataset Parameters
-batch_size = 128
+batch_size = 64 
 load_size = 256
 fine_size = 224
 c = 3
