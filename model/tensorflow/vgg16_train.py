@@ -48,11 +48,12 @@ loader_val = DataLoaderH5(**opt_data_val)
 # tf Graph input
 x = tf.placeholder(tf.float32, [None, fine_size, fine_size, c])
 y = tf.placeholder(tf.int64, None)
-keep_dropout = tf.placeholder(tf.float32)
+#keep_dropout = tf.placeholder(tf.float32)
+train_mode = tf.placeholder(tf.bool)
 
 # Construct model
 vgg = vgg16.Vgg16()
-vgg.build(x)
+vgg.build(x, train_mode)
 logits = vgg.prob
 
 # Define loss and optimizer
@@ -105,7 +106,7 @@ with tf.Session() as sess:
                   "{:.2f}".format(acc5))
         
         # Run optimization op (backprop)
-        sess.run(train_optimizer, feed_dict={x: images_batch, y: labels_batch, keep_dropout: dropout})
+        sess.run(train_optimizer, feed_dict={x: images_batch, y: labels_batch, train_mode: True})
         
         step += 1
         
@@ -125,7 +126,7 @@ with tf.Session() as sess:
     loader_val.reset()
     for i in range(num_batch):
         images_batch, labels_batch = loader_val.next_batch(batch_size)    
-        acc1, acc5 = sess.run([accuracy1, accuracy5], feed_dict={x: images_batch, y: labels_batch, keep_dropout: 1.})
+        acc1, acc5 = sess.run([accuracy1, accuracy5], feed_dict={x: images_batch, y: labels_batch, train_mode: False})
         acc1_total += acc1
         acc5_total += acc5
         print("Validation Accuracy Top1 = " + \
