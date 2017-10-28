@@ -5,8 +5,8 @@ from DataLoader import *
 import vgg16
 # Dataset Parameters
 batch_size = 128
-load_size = 128
-fine_size = 112
+load_size = 256
+fine_size = 224
 c = 3
 data_mean = np.asarray([0.45834960097,0.44674252445,0.41352266842])
 
@@ -23,7 +23,7 @@ start_from = ''
 
 # Construct dataloader
 opt_data_train = {
-    'data_h5': 'miniplaces_128_train.h5',
+    'data_h5': 'miniplaces_256_train.h5',
     'data_root': '../../../images/',   # MODIFY PATH ACCORDINGLY
     'data_list': '../../data/train.txt', # MODIFY PATH ACCORDINGLY
     'load_size': load_size,
@@ -32,7 +32,7 @@ opt_data_train = {
     'randomize': True
     }
 opt_data_val = {
-    'data_h5': 'miniplaces_128_val.h5',
+    'data_h5': 'miniplaces_256_val.h5',
     'data_root': '../../../images/',   # MODIFY PATH ACCORDINGLY
     'data_list': '../../data/val.txt',   # MODIFY PATH ACCORDINGLY
     'load_size': load_size,
