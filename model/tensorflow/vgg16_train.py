@@ -4,9 +4,9 @@ import tensorflow as tf
 from DataLoader import *
 import vgg16
 # Dataset Parameters
-batch_size = 128
-load_size = 256
-fine_size = 224
+batch_size = 1024
+load_size = 128
+fine_size = 112
 c = 3
 data_mean = np.asarray([0.45834960097,0.44674252445,0.41352266842])
 
@@ -55,10 +55,12 @@ train_mode = tf.placeholder(tf.bool)
 # Construct model
 vgg = vgg16.Vgg16()
 vgg.build(x, train_mode)
-logits = vgg.prob
+logits = vgg.fc8
 
 # Define loss and optimizer
 loss = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(labels=y, logits=logits))
+#cost = -tf.reduce_sum(y*tf.log(logits))
+
 train_optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(loss)
 
 # Evaluate model
