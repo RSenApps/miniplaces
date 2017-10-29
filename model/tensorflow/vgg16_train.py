@@ -16,7 +16,11 @@ dropout = 0.5 # Dropout, probability to keep units
 training_iters = 100000
 step_display = 100
 step_save = 10000
-path_save = 'vgg16'
+path_save = './vgg16'
+
+if not os.path.exists(path_save):
+    os.makedirs(path_save)
+
 start_from = ''
 
 
