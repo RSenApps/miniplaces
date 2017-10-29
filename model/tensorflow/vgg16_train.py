@@ -11,10 +11,10 @@ c = 3
 data_mean = np.asarray([0.45834960097,0.44674252445,0.41352266842])
 
 # Training Parameters
-learning_rate = 0.01
+learning_rate = 0.002
 dropout = 0.5 # Dropout, probability to keep units
 training_iters = 100000
-step_display = 50
+step_display = 100
 step_save = 10000
 path_save = 'vgg16'
 start_from = ''
