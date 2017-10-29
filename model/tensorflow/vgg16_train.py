@@ -13,15 +13,15 @@ data_mean = np.asarray([0.45834960097,0.44674252445,0.41352266842])
 # Training Parameters
 learning_rate = 0.002
 dropout = 0.5 # Dropout, probability to keep units
-training_iters = 100000
+training_iters = 0#50000
 step_display = 100
 step_save = 10000
-path_save = './vgg16'
+path_save = './vgg16/'
 
 if not os.path.exists(path_save):
     os.makedirs(path_save)
 
-start_from = ''
+start_from = './vgg16/'
 
 
 
@@ -88,58 +88,59 @@ with tf.Session() as sess:
     else:
         sess.run(init)
     
-    step = 0
+    step = 50000
+    while True:
+        training_step = 0
+        while training_step < training_iters:
+            # Load a batch of training data
+            images_batch, labels_batch = loader_train.next_batch(batch_size)
 
-    while step < training_iters:
-        # Load a batch of training data
-        images_batch, labels_batch = loader_train.next_batch(batch_size)
-        
-        if step % step_display == 0:
-            print('[%s]:' %(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
+            if step % step_display == 0:
+                print('[%s]:' %(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
 
-            # Calculate batch loss and accuracy on training set
-            l, acc1, acc5 = sess.run([loss, accuracy1, accuracy5], feed_dict={x: images_batch, y: labels_batch, train_mode: False})
-            print("-Iter " + str(step) + ", Training Loss= " + \
-                  "{:.4f}".format(l) + ", Accuracy Top1 = " + \
+                # Calculate batch loss and accuracy on training set
+                l, acc1, acc5 = sess.run([loss, accuracy1, accuracy5], feed_dict={x: images_batch, y: labels_batch, train_mode: False})
+                print("-Iter " + str(step) + ", Training Loss= " + \
+                      "{:.4f}".format(l) + ", Accuracy Top1 = " + \
+                      "{:.2f}".format(acc1) + ", Top5 = " + \
+                      "{:.2f}".format(acc5))
+
+                # Calculate batch loss and accuracy on validation set
+                images_batch_val, labels_batch_val = loader_val.next_batch(batch_size)
+                l, acc1, acc5 = sess.run([loss, accuracy1, accuracy5], feed_dict={x: images_batch_val, y: labels_batch_val, train_mode: False})
+                print("-Iter " + str(step) + ", Validation Loss= " + \
+                      "{:.4f}".format(l) + ", Accuracy Top1 = " + \
+                      "{:.2f}".format(acc1) + ", Top5 = " + \
+                      "{:.2f}".format(acc5))
+
+            # Run optimization op (backprop)
+            sess.run(train_optimizer, feed_dict={x: images_batch, y: labels_batch, train_mode: True})
+
+            step += 1
+            training_step += 1
+            # Save model
+            if step % step_save == 0:
+                saver.save(sess, path_save, global_step=step)
+                print("Model saved at Iter %d !" %(step))
+
+        print("Optimization Finished!")
+
+
+        # Evaluate on the whole validation set
+        print('Evaluation on the whole validation set...')
+        num_batch = loader_val.size()//batch_size
+        acc1_total = 0.
+        acc5_total = 0.
+        loader_val.reset()
+        for i in range(num_batch):
+            images_batch, labels_batch = loader_val.next_batch(batch_size)
+            acc1, acc5 = sess.run([accuracy1, accuracy5], feed_dict={x: images_batch, y: labels_batch, train_mode: False})
+            acc1_total += acc1
+            acc5_total += acc5
+            print("Validation Accuracy Top1 = " + \
                   "{:.2f}".format(acc1) + ", Top5 = " + \
                   "{:.2f}".format(acc5))
 
-            # Calculate batch loss and accuracy on validation set
-            images_batch_val, labels_batch_val = loader_val.next_batch(batch_size)    
-            l, acc1, acc5 = sess.run([loss, accuracy1, accuracy5], feed_dict={x: images_batch_val, y: labels_batch_val, train_mode: False})
-            print("-Iter " + str(step) + ", Validation Loss= " + \
-                  "{:.4f}".format(l) + ", Accuracy Top1 = " + \
-                  "{:.2f}".format(acc1) + ", Top5 = " + \
-                  "{:.2f}".format(acc5))
-        
-        # Run optimization op (backprop)
-        sess.run(train_optimizer, feed_dict={x: images_batch, y: labels_batch, train_mode: True})
-        
-        step += 1
-        
-        # Save model
-        if step % step_save == 0:
-            saver.save(sess, path_save, global_step=step)
-            print("Model saved at Iter %d !" %(step))
-        
-    print("Optimization Finished!")
-
-
-    # Evaluate on the whole validation set
-    print('Evaluation on the whole validation set...')
-    num_batch = loader_val.size()//batch_size
-    acc1_total = 0.
-    acc5_total = 0.
-    loader_val.reset()
-    for i in range(num_batch):
-        images_batch, labels_batch = loader_val.next_batch(batch_size)    
-        acc1, acc5 = sess.run([accuracy1, accuracy5], feed_dict={x: images_batch, y: labels_batch, train_mode: False})
-        acc1_total += acc1
-        acc5_total += acc5
-        print("Validation Accuracy Top1 = " + \
-              "{:.2f}".format(acc1) + ", Top5 = " + \
-              "{:.2f}".format(acc5))
-
-    acc1_total /= num_batch
-    acc5_total /= num_batch
-    print('Evaluation Finished! Accuracy Top1 = ' + "{:.4f}".format(acc1_total) + ", Top5 = " + "{:.4f}".format(acc5_total))
+        acc1_total /= num_batch
+        acc5_total /= num_batch
+        print('Evaluation Finished! Accuracy Top1 = ' + "{:.4f}".format(acc1_total) + ", Top5 = " + "{:.4f}".format(acc5_total))
