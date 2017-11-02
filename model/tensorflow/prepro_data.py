@@ -2,7 +2,8 @@ import os
 import numpy as np
 import h5py
 import scipy.misc
-
+import scipy.ndimage
+from PIL import Image
 def createH5(params):
 
 	# create output h5 file
@@ -20,6 +21,9 @@ def createH5(params):
 	list_im = np.array(list_im, np.object)
 	list_lab = np.array(list_lab, np.uint8)
 	N = list_im.shape[0]
+	augN = N
+	if (params['split'] == 'train'):
+      		augN *= 10; #data augmentation
 	print('# Images found:', N)
 	
 	# permutation
@@ -27,18 +31,44 @@ def createH5(params):
 	list_im = list_im[perm]
 	list_lab = list_lab[perm]
 
-	im_set = f_h5.create_dataset("images", (N,params['img_resize'],params['img_resize'],3), dtype='uint8') # space for resized images
+	im_set = f_h5.create_dataset("images", (augN,params['img_resize'],params['img_resize'],3), dtype='uint8') # space for resized images
 	f_h5.create_dataset("labels", dtype='uint8', data=list_lab)
 
-	for i in range(N):
-		image = scipy.misc.imread(list_im[i])
+	for i in range(augN):
+		image = scipy.misc.imread(list_im[i % N])
 		assert image.shape[2]==3, 'Channel size error!'
-		image = scipy.misc.imresize(image, (params['img_resize'],params['img_resize']))
+		bg_value = np.median(image)
+		angle = np.random.randint(-15,15,1)
+		image = scipy.misc.imrotate(image,angle)
+		shiftx = np.random.randint(-10, 10, 1)
+		shifty = np.random.randint(-10, 10, 1)
+		image = scipy.ndimage.shift(image,[shiftx, shifty, 0], cval=bg_value)
+    
+		s_vs_p = 0.5
+		amount = 0.001
+		out = np.copy(image)
+		# Salt mode
+		num_salt = np.ceil(amount * image.size * s_vs_p)
+		coords = [np.random.randint(0, i - 1, int(num_salt)) for i in image.shape]
+		image[coords] = 1
+    
+		if (np.random.randint(0, 1, 1)):
+			image = np.flip(image)
 
+		crop = np.random.randint(70, 120, 1)
+		startx = image.shape[1]//2-(crop//2)
+    		starty = image.shape[0]//2-(crop//2)    
+		image = image[starty:starty+crop,startx:startx+crop]
+    
+		image = scipy.misc.imresize(image, (params['img_resize'],params['img_resize']))
+		img = Image.fromarray(image, 'RGB')
+		img.show();
+    
+    
 		im_set[i] = image
 
 		if i % 1000 == 0:
-			print('processing %d/%d (%.2f%% done)' % (i, N, i*100.0/N))
+			print('processing %d/%d (%.2f%% done)' % (i, augN, i*100.0/augN))
 
 	f_h5.close()
 

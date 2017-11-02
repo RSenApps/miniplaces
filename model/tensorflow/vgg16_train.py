@@ -88,7 +88,7 @@ with tf.Session() as sess:
     else:
         sess.run(init)
     
-    step = 50000
+    step = 0
     while True:
         training_step = 0
         while training_step < training_iters:
