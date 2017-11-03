@@ -62,8 +62,6 @@ def createH5(params):
     	image = scipy.misc.imresize(image, (params['img_resize'],params['img_resize']))
 		#img = Image.fromarray(image, 'RGB')
 		#img.show();
-    
-    
 		im_set[i] = image
 
 		if i % 1000 == 0:
