@@ -61,8 +61,8 @@ def createH5(params):
 		image = image[starty:starty+crop,startx:startx+crop]
     
 		image = scipy.misc.imresize(image, (params['img_resize'],params['img_resize']))
-		img = Image.fromarray(image, 'RGB')
-		img.show();
+		#img = Image.fromarray(image, 'RGB')
+		#img.show();
     
     
 		im_set[i] = image
