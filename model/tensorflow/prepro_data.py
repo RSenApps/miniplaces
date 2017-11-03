@@ -49,7 +49,7 @@ def createH5(params):
 		out = np.copy(image)
 		# Salt mode
 		num_salt = np.ceil(amount * image.size * s_vs_p)
-		coords = [np.random.randint(0, i - 1, int(num_salt)) for i in image.shape]
+		coords = [np.random.randint(0, j - 1, int(num_salt)) for j in image.shape]
 		image[coords] = 1
     
 		if (np.random.randint(0, 1, 1)):
