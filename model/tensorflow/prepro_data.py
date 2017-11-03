@@ -55,10 +55,10 @@ def createH5(params):
 		if (np.random.randint(0, 1, 1)):
 			image = np.flip(image)
 
-		crop = np.random.randint(70, 120, 1)
+		crop = np.random.randint(70, 120, 1)[0]
 		startx = image.shape[1]/2-(crop/2)
     		starty = image.shape[0]/2-(crop/2)
-    		image = image[starty[0]:starty[0]+crop,startx[0]:startx[0]+crop, :]
+    		image = image[starty:starty+crop,startx:startx+crop, :]
     		image = scipy.misc.imresize(image, (params['img_resize'],params['img_resize']))
     		#img = Image.fromarray(image, 'RGB')
     		#img.show();
