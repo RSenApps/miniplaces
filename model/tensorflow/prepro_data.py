@@ -32,7 +32,7 @@ def createH5(params):
 	list_lab = list_lab[perm]
 
 	im_set = f_h5.create_dataset("images", (augN,params['img_resize'],params['img_resize'],3), dtype='uint8') # space for resized images
-	f_h5.create_dataset("labels", dtype='uint8', data=list_lab)
+	f_h5.create_dataset("labels", dtype='uint8', data=list_lab*(augN/N))
 
 	for i in range(augN):
 		image = scipy.misc.imread(list_im[i % N])
