@@ -4,6 +4,7 @@ import h5py
 import scipy.misc
 import scipy.ndimage
 from PIL import Image
+np.seed(123)
 def createH5(params):
 
 	# create output h5 file
@@ -21,9 +22,9 @@ def createH5(params):
 	list_im = np.array(list_im, np.object)
 	list_lab = np.array(list_lab, np.uint8)
 	N = list_im.shape[0]
-	augN = N
-	if (params['split'] == 'train'):
-      		augN *= 10; #data augmentation
+	#augN = N
+	#if (params['split'] == 'train'):
+    #  		augN *= 10; #data augmentation
 	print('# Images found:', N)
 	
 	# permutation
@@ -37,6 +38,7 @@ def createH5(params):
 	for i in range(augN):
 		image = scipy.misc.imread(list_im[i % N])
 		assert image.shape[2]==3, 'Channel size error!'
+		'''
 		bg_value = np.median(image)
 		angle = np.random.randint(-15,15,1)
 		image = scipy.misc.imrotate(image,angle)
@@ -59,9 +61,11 @@ def createH5(params):
 		startx = image.shape[1]/2-(crop/2)
     		starty = image.shape[0]/2-(crop/2)
     		image = image[starty:starty+crop,startx:startx+crop, :]
-    		image = scipy.misc.imresize(image, (params['img_resize'],params['img_resize']))
+    	'''
+    	image = scipy.misc.imresize(image, (params['img_resize'],params['img_resize']))
     		#img = Image.fromarray(image, 'RGB')
     		#img.show();
+
 		im_set[i] = image
 
 		if i % 1000 == 0:
