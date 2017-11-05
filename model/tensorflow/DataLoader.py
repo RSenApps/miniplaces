@@ -52,8 +52,8 @@ class DataLoaderH5(object):
 
                 image = image - self.data_mean
 
-                angle = np.random.randint(-15,15,1)
-                #image = scipy.misc.imrotate(image,angle)
+                angle = np.random.randint(-5,5,1)
+                image = scipy.misc.imrotate(image,angle)
             
                 if (np.random.randint(0, 1, 1)):
                     image = np.flip(image)
