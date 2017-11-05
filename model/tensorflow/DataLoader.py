@@ -74,9 +74,11 @@ class DataLoaderH5(object):
                 crop = self.fine_size
                 startx = image.shape[1]/2-(crop/2)
                 starty = image.shape[0]/2-(crop/2)
-                image = image[starty:starty+crop,startx:startx+crop, :]
+                images_batch[i, ...] = image[starty:starty+crop,startx:startx+crop, :]
                 #images_batch[i, ...] = scipy.misc.imresize(image, (self.fine_size,self.fine_size))            labels_batch[i, ...] = self.lab_set[self._idx]
             
+            labels_batch[i, ...] = self.lab_set[self._idx]
+
             self._idx += 1
             if self._idx == self.num:
                 #c = len(self.f['images']) / self.batch_count
