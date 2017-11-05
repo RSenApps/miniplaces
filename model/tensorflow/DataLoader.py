@@ -35,7 +35,7 @@ class DataLoaderH5(object):
         for i in range(batch_size):
             image = self.im_set[self._idx]
             image = image.astype(np.float32)/255.
-            if 1: #self.randomize:
+            if self.randomize:
                 bg_value = np.median(image)
                 
                 #shiftx = np.random.randint(-10, 10, 1)
@@ -47,8 +47,8 @@ class DataLoaderH5(object):
                 #out = np.copy(image)
                 # Salt mode
                 num_salt = np.ceil(amount * image.size * s_vs_p)
-                coords = [np.random.randint(0, j - 1, int(num_salt)) for j in image.shape]
-                image[coords] = 1
+                #coords = [np.random.randint(0, j - 1, int(num_salt)) for j in image.shape]
+                #image[coords] = 1
 
                 image = image - self.data_mean
 
