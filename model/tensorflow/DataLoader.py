@@ -52,26 +52,25 @@ class DataLoaderH5(object):
 
                 image = image - self.data_mean
 
-                angle = np.random.randint(-5,5,1)
-                image = scipy.misc.imrotate(image,angle)
+                #angle = np.random.randint(-5,5,1)
+                #image = scipy.misc.imrotate(image,angle)
             
                 if (np.random.randint(0, 1, 1)):
                     image = np.flip(image)
 
-                #crop = np.random.randint(70, 120, 1)[0]
-                #startx = image.shape[1]/2-(crop/2)
-                #starty = image.shape[0]/2-(crop/2)
-                #image = image[starty:starty+crop,startx:startx+crop, :]
-                #images_batch[i, ...] = scipy.misc.imresize(image, (self.fine_size,self.fine_size))
+                crop = np.random.randint(70, 120, 1)[0]
+                startx = image.shape[1]/2-(crop/2)
+                starty = image.shape[0]/2-(crop/2)
+                image = image[starty:starty+crop,startx:startx+crop, :]
+                images_batch[i, ...] = scipy.misc.imresize(image, (self.fine_size,self.fine_size))
 
-                offset_h = np.random.random_integers(0, self.load_size-self.fine_size)
-                offset_w = np.random.random_integers(0, self.load_size-self.fine_size)
+                #offset_h = np.random.random_integers(0, self.load_size-self.fine_size)
+                #offset_w = np.random.random_integers(0, self.load_size-self.fine_size)
             else:
                 image = image - self.data_mean
                 offset_h = (self.load_size-self.fine_size)//2
                 offset_w = (self.load_size-self.fine_size)//2
-            
-            images_batch[i, ...] = image[offset_h:offset_h+self.fine_size, offset_w:offset_w+self.fine_size, :]
+                images_batch[i, ...] = image[offset_h:offset_h+self.fine_size, offset_w:offset_w+self.fine_size, :]
             labels_batch[i, ...] = self.lab_set[self._idx]
             
             self._idx += 1
