@@ -68,10 +68,10 @@ class DataLoaderH5(object):
             
             self._idx += 1
             if self._idx == self.num:
-                c = len(self.f['images']) / self.batch_count
-                self.current_data_batch = (self.current_data_batch + 1) % self.batch_count
-                self.im_set = np.array(self.f['images'][c * self.current_data_batch: (c+1) * self.current_data_batch])
-                self.lab_set = np.array(self.f['labels'][c * self.current_data_batch: (c+1) * self.current_data_batch])
+                #c = len(self.f['images']) / self.batch_count
+                #self.current_data_batch = (self.current_data_batch + 1) % self.batch_count
+                #self.im_set = np.array(self.f['images'][c * self.current_data_batch: (c+1) * self.current_data_batch])
+                #self.lab_set = np.array(self.f['labels'][c * self.current_data_batch: (c+1) * self.current_data_batch])
 
                 self._idx = 0
                 if self.randomize:
