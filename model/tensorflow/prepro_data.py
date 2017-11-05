@@ -4,7 +4,7 @@ import h5py
 import scipy.misc
 import scipy.ndimage
 from PIL import Image
-np.seed(123)
+np.random.seed(123)
 def createH5(params):
 
 	# create output h5 file
