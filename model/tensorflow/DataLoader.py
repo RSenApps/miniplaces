@@ -34,22 +34,26 @@ class DataLoaderH5(object):
         
         for i in range(batch_size):
             image = self.im_set[self._idx]
-            image = image.astype(np.float32)/255. - self.data_mean
+            image = image.astype(np.float32)/255.
             if self.randomize:
                 bg_value = np.median(image)
-                angle = np.random.randint(-15,15,1)
-                image = scipy.misc.imrotate(image,angle)
+                
                 #shiftx = np.random.randint(-10, 10, 1)
                 #shifty = np.random.randint(-10, 10, 1)
                 #image = scipy.ndimage.shift(image,[shiftx, shifty, 0], cval=bg_value)
             
                 s_vs_p = 0.5
                 amount = 0.001
-                out = np.copy(image)
+                #out = np.copy(image)
                 # Salt mode
                 num_salt = np.ceil(amount * image.size * s_vs_p)
                 coords = [np.random.randint(0, j - 1, int(num_salt)) for j in image.shape]
                 image[coords] = 1
+
+                image = image - self.data_mean
+
+                angle = np.random.randint(-15,15,1)
+                image = scipy.misc.imrotate(image,angle)
             
                 if (np.random.randint(0, 1, 1)):
                     image = np.flip(image)
@@ -63,6 +67,7 @@ class DataLoaderH5(object):
                 offset_h = np.random.random_integers(0, self.load_size-self.fine_size)
                 offset_w = np.random.random_integers(0, self.load_size-self.fine_size)
             else:
+                image = image - self.data_mean
                 offset_h = (self.load_size-self.fine_size)//2
                 offset_w = (self.load_size-self.fine_size)//2
             
