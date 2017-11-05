@@ -36,7 +36,7 @@ class DataLoaderH5(object):
             image = self.im_set[self._idx]
             image = image.astype(np.float32)/255.
             if self.randomize:
-                bg_value = np.median(image)
+                #bg_value = np.median(image)
                 
                 #shiftx = np.random.randint(-10, 10, 1)
                 #shifty = np.random.randint(-10, 10, 1)
@@ -47,13 +47,13 @@ class DataLoaderH5(object):
                 #out = np.copy(image)
                 # Salt mode
                 num_salt = np.ceil(amount * image.size * s_vs_p)
-                #coords = [np.random.randint(0, j - 1, int(num_salt)) for j in image.shape]
-                #image[coords] = 1
+                coords = [np.random.randint(0, j - 1, int(num_salt)) for j in image.shape]
+                image[coords] = 1
 
                 image = image - self.data_mean
 
                 angle = np.random.randint(-15,15,1)
-                image = scipy.misc.imrotate(image,angle)
+                #image = scipy.misc.imrotate(image,angle)
             
                 if (np.random.randint(0, 1, 1)):
                     image = np.flip(image)
