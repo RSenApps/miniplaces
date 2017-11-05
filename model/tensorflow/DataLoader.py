@@ -21,7 +21,7 @@ class DataLoaderH5(object):
         assert self.im_set.shape[0]==self.lab_set.shape[0], '#images and #labels do not match!'
         assert self.im_set.shape[1]==self.load_size, 'Image size error!'
         assert self.im_set.shape[2]==self.load_size, 'Image size error!'
-        print('# Images found:', self.num * self.batch_count)
+        print('# Images found:', self.num)
 
         
 
