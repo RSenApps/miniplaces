@@ -32,10 +32,10 @@ def createH5(params):
 	list_im = list_im[perm]
 	list_lab = list_lab[perm]
 
-	im_set = f_h5.create_dataset("images", (augN,params['img_resize'],params['img_resize'],3), dtype='uint8') # space for resized images
+	im_set = f_h5.create_dataset("images", (N,params['img_resize'],params['img_resize'],3), dtype='uint8') # space for resized images
 	f_h5.create_dataset("labels", dtype='uint8', data=list_lab)
 
-	for i in range(augN):
+	for i in range(N):
 		image = scipy.misc.imread(list_im[i % N])
 		assert image.shape[2]==3, 'Channel size error!'
 		'''
@@ -69,7 +69,7 @@ def createH5(params):
 		im_set[i] = image
 
 		if i % 1000 == 0:
-			print('processing %d/%d (%.2f%% done)' % (i, augN, i*100.0/augN))
+			print('processing %d/%d (%.2f%% done)' % (i, N, i*100.0/N))
 
 	f_h5.close()
 
