@@ -55,7 +55,7 @@ class Vgg16:
         self.batch2_2 = self.batch_norm_layer(self.conv2_2, train_mode,'bn2_2')
         self.pool2 = self.max_pool(self.batch2_2, 'pool2')
 
-        self.conv3_1 = self.conv_layer(self.pool2, 64, 256, "conv3_1")
+        self.conv3_1 = self.conv_layer(self.pool2, 128, 256, "conv3_1")
         self.batch3_1 = self.batch_norm_layer(self.conv3_1, train_mode,'bn3_1')
         self.conv3_2 = self.conv_layer(self.batch3_1, 256, 256, "conv3_2")
         self.batch3_2 = self.batch_norm_layer(self.conv3_2, train_mode,'bn3_2')
