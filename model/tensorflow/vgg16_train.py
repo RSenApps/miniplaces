@@ -23,8 +23,8 @@ path_save = './vgg16/'
 if not os.path.exists(path_save):
     os.makedirs(path_save)
 
-start_from =  './vgg16/-35000'
-starting_step = 35000
+start_from =  './vgg16/-55000'
+starting_step = 55000
 
 
 # Construct dataloader
