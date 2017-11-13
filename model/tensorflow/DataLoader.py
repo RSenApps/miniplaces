@@ -65,7 +65,7 @@ class DataLoaderH5(object):
                 starty = np.random.randint(0, image.shape[0]-(crop))
 
                 image = image[starty:starty+crop,startx:startx+crop, :]
-                images_batch[i, ...] = scipy.ndimage.zoom(image, (self.fine_size/image.shape[0],self.fine_size/image.shape[1], 1.0))
+                images_batch[i, ...] = scipy.ndimage.zoom(image, (float(self.fine_size)/image.shape[0],float(self.fine_size)/image.shape[1], 1.0))
                 #zoom=1 image = image[starty:starty+crop,startx:startx+crop, :]
                 #zoom=1   images_batch[i, ...] = image.repeat(zoom, 0).repeat(zoom, 1)
 
