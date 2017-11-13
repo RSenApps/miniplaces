@@ -52,20 +52,20 @@ class DataLoaderH5(object):
 
                 image = image - self.data_mean
 
-                angle = np.random.randint(-15,15,1)
-                image = scipy.ndimage.rotate(image,angle,reshape=False)
+                #angle = np.random.randint(-15,15,1)
+                #image = scipy.ndimage.rotate(image,angle,reshape=False)
             
                 if (np.random.randint(0, 1, 1)):
                     image = np.flip(image)
 
-                zoom = 1 #np.random.choice([1, 2])
-                crop = self.fine_size / zoom
-                #crop = np.random.randint(self.fine_size/2, self.fine_size, 1)[0]
+                #zoom = 1 #np.random.choice([1, 2])
+                #crop = self.fine_size / zoom
+                crop = np.random.randint(84, self.fine_size, 1)[0]
                 startx = np.random.randint(0, image.shape[1]-(crop))
                 starty = np.random.randint(0, image.shape[0]-(crop))
 
-                images_batch[i, ...] = image[starty:starty+crop,startx:startx+crop, :]
-                #images_batch[i, ...] = scipy.ndimage.zoom(image, (float(self.fine_size)/image.shape[0],float(self.fine_size)/image.shape[1], 1.0))
+                image = image[starty:starty+crop,startx:startx+crop, :]
+                images_batch[i, ...] = scipy.ndimage.zoom(image, (float(self.fine_size)/image.shape[0],float(self.fine_size)/image.shape[1], 1.0))
                 #zoom=1 image = image[starty:starty+crop,startx:startx+crop, :]
                 #zoom=1   images_batch[i, ...] = image.repeat(zoom, 0).repeat(zoom, 1)
 
