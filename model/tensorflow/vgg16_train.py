@@ -21,8 +21,8 @@ path_save = './vgg16/'
 if not os.path.exists(path_save):
     os.makedirs(path_save)
 
-start_from = ''# './vgg16/vgg16-10000'
-
+start_from = './vgg16/vgg16-30000'
+starting_step = 30000
 
 
 # Construct dataloader
@@ -88,7 +88,7 @@ with tf.Session() as sess:
     else:
         sess.run(init)
     
-    step = 0
+    step = starting_step
     while True:
         training_step = 0
         while training_step < training_iters:
