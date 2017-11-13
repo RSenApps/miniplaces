@@ -58,9 +58,9 @@ class DataLoaderH5(object):
                 if (np.random.randint(0, 1, 1)):
                     image = np.flip(image)
 
-                #zoom = 1 #np.random.choice([1, 2])
-                #crop = self.fine_size / zoom
-                crop = np.random.randint(self.fine_size/2, self.fine_size, 1)[0]
+                zoom = 1 #np.random.choice([1, 2])
+                crop = self.fine_size / zoom
+                #crop = np.random.randint(self.fine_size/2, self.fine_size, 1)[0]
                 startx = np.random.randint(0, image.shape[1]-(crop))
                 starty = np.random.randint(0, image.shape[0]-(crop))
 
