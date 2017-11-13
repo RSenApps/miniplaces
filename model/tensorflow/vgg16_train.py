@@ -4,7 +4,7 @@ import tensorflow as tf
 from DataLoader import *
 import vgg16
 # Dataset Parameters
-batch_size = 130
+batch_size = 100
 load_size = 128
 fine_size = 112
 c = 3
@@ -21,8 +21,8 @@ path_save = './vgg16/'
 if not os.path.exists(path_save):
     os.makedirs(path_save)
 
-start_from =  '' # './vgg16/-30000'
-starting_step = 0 #30000
+start_from =  './vgg16/-30000'
+starting_step = 30000
 
 
 # Construct dataloader
