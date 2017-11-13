@@ -6,7 +6,7 @@ import vgg16
 from multiprocessing.pool import ThreadPool
 
 # Dataset Parameters
-batch_size = 100
+batch_size = 500
 load_size = 128
 fine_size = 112
 c = 3
@@ -23,8 +23,8 @@ path_save = './vgg16/'
 if not os.path.exists(path_save):
     os.makedirs(path_save)
 
-start_from =  './vgg16/-60000'
-starting_step = 60000
+start_from =  '' # './vgg16/-60000'
+starting_step = 0 #60000
 
 
 # Construct dataloader
