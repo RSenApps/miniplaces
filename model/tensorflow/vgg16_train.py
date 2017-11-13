@@ -21,7 +21,7 @@ path_save = './vgg16/'
 if not os.path.exists(path_save):
     os.makedirs(path_save)
 
-start_from = './vgg16/vgg16-30000'
+start_from = './vgg16/-30000'
 starting_step = 30000
 
 
