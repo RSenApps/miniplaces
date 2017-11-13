@@ -6,7 +6,7 @@ import vgg16
 from multiprocessing.pool import ThreadPool
 
 # Dataset Parameters
-batch_size = 500
+batch_size = 256
 load_size = 128
 fine_size = 112
 c = 3
