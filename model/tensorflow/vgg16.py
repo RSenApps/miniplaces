@@ -65,7 +65,7 @@ class Vgg16:
 #        self.batch3_4 = self.batch_norm_layer(self.conv3_4,train_mode,'bn3_4')
         self.pool3 = self.max_pool(self.batch3_1, 'pool3')
 
-        self.conv4_1 = self.conv_layer(self.pool3, 128, 256, "conv4_1")
+        self.conv4_1 = self.conv_layer(self.pool3, 128, 128, "conv4_1")
         self.batch4_1 = self.batch_norm_layer(self.conv4_1, train_mode,'bn4_1')
         #self.conv4_2 = self.conv_layer(self.batch4_1, 512, 512, "conv4_2")
         #self.batch4_2 = self.batch_norm_layer(self.conv4_2, train_mode,'bn4_2')
@@ -74,7 +74,7 @@ class Vgg16:
         #self.conv4_4 = self.conv_layer(self.conv4_3, 512, 512, "conv4_4")
         self.pool4 = self.max_pool(self.batch4_1, 'pool4')
 
-        self.conv5_1 = self.conv_layer(self.pool4, 256, 512, "conv5_1")
+        self.conv5_1 = self.conv_layer(self.pool4, 128, 128, "conv5_1")
         self.batch5_1 = self.batch_norm_layer(self.conv5_1, train_mode,'bn5_1')
         #self.conv5_2 = self.conv_layer(self.batch5_1, 512, 512, "conv5_2")
         #self.batch5_2 = self.batch_norm_layer(self.conv5_2, train_mode,'bn5_2')
@@ -83,7 +83,8 @@ class Vgg16:
         #self.conv5_4 = self.conv_layer(self.conv5_3, 512, 512, "conv5_4")
         self.pool5 = self.max_pool(self.batch5_1, 'pool5')
 
-        self.fc6 = self.fc_layer(self.pool5, 25088, 4096, "fc6")  # 25088 = ((224 // (2 ** 5)) ** 2) * 512
+        self.fc6 = self.fc_layer(self.pool5, 6272, 1000, "fc6")  # 25088 = ((224 // (2 ** 5)) ** 2) * 512
+        '''
         self.batch6 = self.batch_norm_layer(self.fc6, train_mode, 'bn6')
         self.relu6 = tf.nn.relu(self.batch6)
         if train_mode is not None:
@@ -100,7 +101,7 @@ class Vgg16:
             self.relu7 = tf.nn.dropout(self.relu7, self.dropout)
 
         self.fc8 = self.fc_layer(self.relu7, 4096, 1000, "fc8")
-
+        '''
         #self.prob = tf.nn.softmax(self.fc8, name="prob")
 
         self.data_dict = None

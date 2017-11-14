@@ -6,7 +6,7 @@ import vgg16
 from multiprocessing.pool import ThreadPool
 
 # Dataset Parameters
-batch_size = 256
+batch_size = 512
 load_size = 128
 fine_size = 112
 c = 3
@@ -61,7 +61,7 @@ train_mode = tf.placeholder(tf.bool)
 # Construct model
 vgg = vgg16.Vgg16()
 vgg.build(x, train_mode)
-logits = vgg.fc8
+logits = vgg.fc6
 
 # Define loss and optimizer
 loss = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(labels=y, logits=logits))
