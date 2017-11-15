@@ -62,7 +62,7 @@ class ResNet(object):
             print('\tBuilding unit: %s' % scope.name)
             x = tf.reduce_mean(x, [1, 2])
         '''
-        x = self._fc(x, self._hp)
+        x = self.fc_layer(x, 512*7*7, 1000, "fc")
 
         logits = x
 
@@ -174,6 +174,14 @@ class ResNet(object):
         self._add_flops_weights(scope_name, f, w)
         return x
 
+    def fc_layer(self, bottom, in_size, out_size, name):
+        with tf.variable_scope(name):
+            weights, biases = self.get_fc_var(in_size, out_size, name)
+
+            x = tf.reshape(bottom, [-1, in_size])
+            fc = tf.nn.bias_add(tf.matmul(x, weights), biases)
+
+            return fc
     def _bn(self, x, name="bn"):
         x = utils._bn(x, self.is_train, self._global_step, name)
         # f = 8 * self._get_data_size(x)
