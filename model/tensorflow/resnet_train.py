@@ -58,8 +58,9 @@ train_mode = tf.placeholder(tf.bool)
 
 # Construct model
 global_step = tf.Variable(0, trainable=False, name='global_step')
-res = resnet.ResNet(1000,None,None,None,global_step, train_mode=train_mode)
-logits = res.build_tower(x)
+res_train = resnet.ResNet(1000,None,None,None,global_step, train_mode=train_mode)
+
+logits = res_train.build_tower(x)
 
 # Define loss and optimizer
 loss = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(labels=y, logits=logits))
