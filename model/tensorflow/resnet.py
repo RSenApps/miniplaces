@@ -11,7 +11,7 @@ HParams = namedtuple('HParams',
                      'momentum, finetune')
 
 class ResNet(object):
-    def __init__(self, hp, images, labels, global_step, name=None, reuse_weights=False):
+    def __init__(self, hp, images, labels, global_step, name=None, reuse_weights=False, train_mode=None):
         self._hp = hp # Hyperparameters
         self._images = images # Input images
         self._labels = labels # Input labels
@@ -19,7 +19,7 @@ class ResNet(object):
         self._name = name
         self._reuse_weights = reuse_weights
         self.lr = tf.placeholder(tf.float32, name="lr")
-        self.is_train = tf.placeholder(tf.bool, name="train_mode")
+        self.is_train = train_mode
         self._counted_scope = []
         self._flops = 0
         self._weights = 0
