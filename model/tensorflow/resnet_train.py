@@ -59,7 +59,7 @@ train_mode = tf.placeholder(tf.bool)
 # Construct model
 global_step = tf.Variable(0, trainable=False, name='global_step')
 res = resnet.ResNet(1000,None,None,None,global_step)
-logits = res.build(x)
+logits = res.build_tower(x)
 
 # Define loss and optimizer
 loss = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(labels=y, logits=logits))
@@ -79,7 +79,7 @@ saver = tf.train.Saver()
 
 # define summary writer
 #writer = tf.train.SummaryWriter('.', graph=tf.get_default_graph())
-
+print('working')
 # Launch the graph
 with tf.Session() as sess:
     # Initialization
