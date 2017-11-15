@@ -3,8 +3,10 @@ import numpy as np
 import tensorflow as tf
 from DataLoader import *
 import vgg16
+from multiprocessing.pool import ThreadPool
+
 # Dataset Parameters
-batch_size = 150
+batch_size = 512
 load_size = 128
 fine_size = 112
 c = 3
@@ -21,8 +23,8 @@ path_save = './vgg16/'
 if not os.path.exists(path_save):
     os.makedirs(path_save)
 
-start_from = ''# './vgg16/vgg16-10000'
-
+start_from =  '' # './vgg16/-60000'
+starting_step = 0 #60000
 
 
 # Construct dataloader
@@ -59,7 +61,7 @@ train_mode = tf.placeholder(tf.bool)
 # Construct model
 vgg = vgg16.Vgg16()
 vgg.build(x, train_mode)
-logits = vgg.fc8
+logits = vgg.fc6
 
 # Define loss and optimizer
 loss = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(labels=y, logits=logits))
@@ -79,7 +81,7 @@ saver = tf.train.Saver()
 
 # define summary writer
 #writer = tf.train.SummaryWriter('.', graph=tf.get_default_graph())
-
+pool = ThreadPool(processes=1)
 # Launch the graph
 with tf.Session() as sess:
     # Initialization
@@ -88,12 +90,14 @@ with tf.Session() as sess:
     else:
         sess.run(init)
     
-    step = 0
+    step = starting_step
     while True:
         training_step = 0
+        async_result = pool.apply_async(loader_train.next_batch, [batch_size])
         while training_step < training_iters:
             # Load a batch of training data
-            images_batch, labels_batch = loader_train.next_batch(batch_size)
+            images_batch, labels_batch = async_result.get()  #loader_train.next_batch(batch_size)
+            async_result = pool.apply_async(loader_train.next_batch, [batch_size])
 
             if step % step_display == 0:
                 print('[%s]:' %(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
