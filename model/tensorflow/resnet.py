@@ -19,7 +19,7 @@ class ResNet(object):
         self._name = name
         self._reuse_weights = reuse_weights
         self.lr = tf.placeholder(tf.float32, name="lr")
-        self.is_train = tf.placeholder(tf.bool, name="is_train")
+        self.is_train = tf.placeholder(tf.bool, name="train_mode")
         self._counted_scope = []
         self._flops = 0
         self._weights = 0
@@ -60,7 +60,7 @@ class ResNet(object):
         with tf.variable_scope('logits') as scope:
             print('\tBuilding unit: %s' % scope.name)
             x = tf.reduce_mean(x, [1, 2])
-            x = self._fc(x, hp)
+            x = self._fc(x, self._hp)
 
         logits = x
 
