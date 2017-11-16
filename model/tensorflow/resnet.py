@@ -56,7 +56,7 @@ class ResNet:
         with tf.variable_scope('logits') as scope:
             print('\tBuilding unit: %s' % scope.name)
             x = tf.reduce_mean(x, [1, 2])
-            x = self.fc_layer(x, filters[4], 1000,'fc')
+            x = self.fc_layer(x, filters[4], 100,'fc')
 
         logits = x
 
