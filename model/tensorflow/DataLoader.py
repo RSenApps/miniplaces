@@ -28,7 +28,15 @@ class DataLoaderH5(object):
 
         self.shuffle()
         self._idx = 0
-        
+    #https://github.com/vxy10/ImageAugmentation
+    def augment_brightness_camera_images(image):
+        image1 = cv2.cvtColor(image,cv2.COLOR_RGB2HSV)
+        random_bright = .25+np.random.uniform()
+        #print(random_bright)
+        image1[:,:,2] = image1[:,:,2]*random_bright
+        image1 = cv2.cvtColor(image1,cv2.COLOR_HSV2RGB)
+        return image1
+
     def next_batch(self, batch_size):
         labels_batch = np.zeros(batch_size)
         images_batch = np.zeros((batch_size, self.fine_size, self.fine_size, 3)) 
@@ -36,7 +44,7 @@ class DataLoaderH5(object):
         for i in range(batch_size):
             image = self.im_set[self._idx]
             image = image.astype(np.float32)/255.
-            '''
+            
             if self.randomize:
                 #bg_value = np.median(image)
                 
@@ -51,6 +59,8 @@ class DataLoaderH5(object):
                 num_salt = np.ceil(amount * image.size * s_vs_p)
                 coords = [np.random.randint(0, j - 1, int(num_salt)) for j in image.shape]
                 image[coords] = 1
+
+                image = augment_brightness_camera_images(image)
 
                 image = image - self.data_mean
 
@@ -77,14 +87,13 @@ class DataLoaderH5(object):
                 #offset_h = np.random.random_integers(0, self.load_size-self.fine_size)
                 #offset_w = np.random.random_integers(0, self.load_size-self.fine_size)
             else:
-            '''
-            image = image - self.data_mean
-            #offset_h = (self.load_size-self.fine_size)//2
-            #offset_w = (self.load_size-self.fine_size)//2
-            crop = self.fine_size
-            startx = image.shape[1]/2-(crop/2)
-            starty = image.shape[0]/2-(crop/2)
-            images_batch[i, ...] = image[starty:starty+crop,startx:startx+crop, :]
+                image = image - self.data_mean
+                #offset_h = (self.load_size-self.fine_size)//2
+                #offset_w = (self.load_size-self.fine_size)//2
+                crop = self.fine_size
+                startx = image.shape[1]/2-(crop/2)
+                starty = image.shape[0]/2-(crop/2)
+                images_batch[i, ...] = image[starty:starty+crop,startx:startx+crop, :]
                 #images_batch[i, ...] = scipy.misc.imresize(image, (self.fine_size,self.fine_size))            labels_batch[i, ...] = self.lab_set[self._idx]
             
             labels_batch[i, ...] = self.lab_set[self._idx]
