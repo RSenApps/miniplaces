@@ -70,7 +70,7 @@ loss = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(labels=y, l
 global_step = tf.Variable(0,trainable=False)
 boundaries = [10000,20000]
 values = [.1,.01,.001]
-learning_rate = tf.train_piecewise_constant(global_step,boundaries,values)
+learning_rate = tf.train.piecewise_constant(global_step,boundaries,values)
 train_optimizer = tf.train.GradientDescentOptimizer(learning_rate=learning_rate).minimize(loss,global_step=global_step)
 # Evaluate model
 accuracy1 = tf.reduce_mean(tf.cast(tf.nn.in_top_k(logits, y, 1), tf.float32))
