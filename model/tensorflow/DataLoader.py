@@ -119,7 +119,7 @@ class DataLoaderH5(object):
 
     def shuffle(self):
         perm = np.random.permutation(self.num)
-        self.im_set = self.im_set[perm]' 
+        self.im_set = self.im_set[perm]
         self.lab_set = self.lab_set[perm]
 
 # Loading data from disk
