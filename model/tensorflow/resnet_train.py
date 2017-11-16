@@ -3,6 +3,8 @@ import numpy as np
 import tensorflow as tf
 from DataLoader import *
 import resnet
+from multiprocessing.pool import ThreadPool
+
 # Dataset Parameters
 batch_size = 150
 load_size = 128
@@ -90,9 +92,12 @@ with tf.Session() as sess:
     step = 0
     while True:
         training_step = 0
+        async_result = pool.apply_async(loader_train.next_batch, [batch_size])
         while training_step < training_iters:
             # Load a batch of training data
-            images_batch, labels_batch = loader_train.next_batch(batch_size)
+            images_batch, labels_batch = async_result.get()  #loader_train.next_batch(batch_size)
+            async_result = pool.apply_async(loader_train.next_batch, [batch_size])
+            #images_batch, labels_batch = loader_train.next_batch(batch_size)
 
             if step % step_display == 0:
                 print('[%s]:' %(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
