@@ -25,8 +25,8 @@ class ResNet:
         print('Building model')
         # filters = [128, 128, 256, 512, 1024]
         filters = [64, 64, 128, 256, 512]
-        kernels = [3, 3, 3, 3, 3]
-        strides = [1, 0, 2, 2, 2]
+        kernels = [7, 3, 3, 3, 3]
+        strides = [2, 0, 2, 2, 2]
 
         # conv1
         print('\tBuilding unit: conv1')
