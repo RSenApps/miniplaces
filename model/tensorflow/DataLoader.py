@@ -49,12 +49,12 @@ class DataLoaderH5(object):
                 num_salt = np.ceil(amount * image.size * s_vs_p)
                 coords = [np.random.randint(0, j - 1, int(num_salt)) for j in image.shape]
                 image[coords] = 1
-
+                '''
                 image = image - self.data_mean
 
                 #angle = np.random.randint(-15,15,1)
                 #image = scipy.ndimage.rotate(image,angle,reshape=False)
-                '''
+                
                 if (np.random.randint(0, 1, 1)):
                     image = np.flip(image)
 
