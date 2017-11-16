@@ -53,10 +53,10 @@ class ResNet:
         x = self._residual_block(x,train_mode,filters[4], name='conv5_2')
 
         # Logit
-        with tf.variable_scope('logits') as scope:
-            print('\tBuilding unit: %s' % scope.name)
-            x = tf.reduce_mean(x, [1, 2])
-            x = self.fc_layer(x, filters[4],1000,'fc')
+        #with tf.variable_scope('logits') as scope:
+        #   print('\tBuilding unit: %s' % scope.name)
+        #    x = tf.reduce_mean(x, [1, 2])
+        x = self.fc_layer(x, 7*7*filters[4],1000,'fc')
 
         logits = x
 
