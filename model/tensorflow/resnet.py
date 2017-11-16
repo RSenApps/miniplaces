@@ -11,11 +11,27 @@ class ResNet:
     A trainable version VGG19.
     """
 
+<<<<<<< HEAD
     def __init__(self, resnet_npy_path=None, trainable=True, dropout=0.5):
         if resnet_npy_path is not None:
             self.data_dict = np.load(resnet_npy_path, encoding='latin1').item()
         else:
             self.data_dict = None
+=======
+class ResNet(object):
+    def __init__(self, hp, images, labels, global_step, name=None, reuse_weights=False, train_mode=None):
+        self._hp = hp # Hyperparameters
+        self._images = images # Input images
+        self._labels = labels # Input labels
+        self._global_step = global_step
+        self._name = name
+        self._reuse_weights = reuse_weights
+        self.lr = tf.placeholder(tf.float32, name="lr")
+        self.is_train = train_mode
+        self._counted_scope = []
+        self._flops = 0
+        self._weights = 0
+>>>>>>> efe18cf79faa3a77406cbefa856969eec68fb78c
 
         self.var_dict = {}
         self.trainable = trainable

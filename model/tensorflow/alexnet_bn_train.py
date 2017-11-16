@@ -6,8 +6,8 @@ from DataLoader import *
 
 # Dataset Parameters
 batch_size = 256
-load_size = 256
-fine_size = 224
+load_size = 128
+fine_size = 112
 c = 3
 data_mean = np.asarray([0.45834960097,0.44674252445,0.41352266842])
 
@@ -46,7 +46,7 @@ def alexnet(x, keep_dropout, train_phase):
     }
 
     # Conv + ReLU + Pool, 224->55->27
-    conv1 = tf.nn.conv2d(x, weights['wc1'], strides=[1, 4, 4, 1], padding='SAME')
+    conv1 = tf.nn.conv2d(x, weights['wc1'], strides=[1, 2, 2, 1], padding='SAME')
     conv1 = batch_norm_layer(conv1, train_phase, 'bn1')
     conv1 = tf.nn.relu(conv1)
     pool1 = tf.nn.max_pool(conv1, ksize=[1, 3, 3, 1], strides=[1, 2, 2, 1], padding='SAME')
@@ -93,8 +93,8 @@ def alexnet(x, keep_dropout, train_phase):
 
 # Construct dataloader
 opt_data_train = {
-    #'data_h5': 'miniplaces_256_train.h5',
-    'data_root': '../../data/images/',   # MODIFY PATH ACCORDINGLY
+    'data_h5': 'miniplaces_128_train.h5',
+    'data_root': '../../../images/',   # MODIFY PATH ACCORDINGLY
     'data_list': '../../data/train.txt', # MODIFY PATH ACCORDINGLY
     'load_size': load_size,
     'fine_size': fine_size,
@@ -102,8 +102,8 @@ opt_data_train = {
     'randomize': True
     }
 opt_data_val = {
-    #'data_h5': 'miniplaces_256_val.h5',
-    'data_root': '../../data/images/',   # MODIFY PATH ACCORDINGLY
+    'data_h5': 'miniplaces_128_val.h5',
+    'data_root': '../../../images/',   # MODIFY PATH ACCORDINGLY
     'data_list': '../../data/val.txt',   # MODIFY PATH ACCORDINGLY
     'load_size': load_size,
     'fine_size': fine_size,
@@ -111,10 +111,10 @@ opt_data_val = {
     'randomize': False
     }
 
-loader_train = DataLoaderDisk(**opt_data_train)
-loader_val = DataLoaderDisk(**opt_data_val)
-#loader_train = DataLoaderH5(**opt_data_train)
-#loader_val = DataLoaderH5(**opt_data_val)
+#loader_train = DataLoaderDisk(**opt_data_train)
+#loader_val = DataLoaderDisk(**opt_data_val)
+loader_train = DataLoaderH5(**opt_data_train)
+loader_val = DataLoaderH5(**opt_data_val)
 
 # tf Graph input
 x = tf.placeholder(tf.float32, [None, fine_size, fine_size, c])
