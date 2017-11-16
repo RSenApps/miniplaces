@@ -29,7 +29,7 @@ class DataLoaderH5(object):
         self.shuffle()
         self._idx = 0
     #https://github.com/vxy10/ImageAugmentation
-    def augment_brightness_camera_images(image):
+    def augment_brightness_camera_images(self, image):
         image1 = cv2.cvtColor(image,cv2.COLOR_RGB2HSV)
         random_bright = .25+np.random.uniform()
         #print(random_bright)
@@ -60,7 +60,7 @@ class DataLoaderH5(object):
                 coords = [np.random.randint(0, j - 1, int(num_salt)) for j in image.shape]
                 image[coords] = 1
 
-                image = augment_brightness_camera_images(image)
+                image = self.augment_brightness_camera_images(image)
 
                 image = image - self.data_mean
 
