@@ -81,6 +81,8 @@ saver = tf.train.Saver()
 # define summary writer
 #writer = tf.train.SummaryWriter('.', graph=tf.get_default_graph())
 print('working')
+pool = ThreadPool(processes=1)
+
 # Launch the graph
 with tf.Session() as sess:
     # Initialization
