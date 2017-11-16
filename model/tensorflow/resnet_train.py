@@ -23,7 +23,7 @@ path_save = './resnet18/'
 if not os.path.exists(path_save):
     os.makedirs(path_save)
 
-start_from = ''# './vgg16/vgg16-10000'
+start_from = './resnet18/-5000'
 
 
 
