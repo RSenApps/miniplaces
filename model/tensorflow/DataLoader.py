@@ -2,6 +2,7 @@ import os
 import numpy as np
 import scipy.misc
 import h5py
+import cv2
 np.random.seed(123)
 
 # loading data from .h5
