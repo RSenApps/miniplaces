@@ -70,7 +70,7 @@ class DataLoaderH5(object):
                 image = image[starty:starty+crop,startx:startx+crop, :]
                 images_batch[i, ...] = cv2.resize(image, None, fx=float(self.fine_size)/image.shape[0], fy=float(self.fine_size)/image.shape[1],interpolation=cv2.INTER_CUBIC)
                 
-                images_batch[i, ...] = image[starty:starty+crop,startx:startx+crop, :]
+                #images_batch[i, ...] = image[starty:starty+crop,startx:startx+crop, :]
                 #images_batch[i, ...] = image.repeat(zoom, 0).repeat(zoom, 1)
 
                 #offset_h = np.random.random_integers(0, self.load_size-self.fine_size)
