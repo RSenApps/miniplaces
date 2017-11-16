@@ -105,7 +105,7 @@ with tf.Session() as sess:
                 print('[%s]:' %(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
 
                 # Calculate batch loss and accuracy on training set
-                l, acc1, acc5 = sess.run([loss, accuracy1, accuracy5], feed_dict={x: images_batch, y: labels_batch, train_mode: True})
+                l, acc1, acc5 = sess.run([loss, accuracy1, accuracy5], feed_dict={x: images_batch, y: labels_batch, train_mode: False})
                 print("-Iter " + str(step) + ", Training Loss= " + \
                       "{:.4f}".format(l) + ", Accuracy Top1 = " + \
                       "{:.2f}".format(acc1) + ", Top5 = " + \
