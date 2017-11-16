@@ -36,6 +36,7 @@ class DataLoaderH5(object):
         for i in range(batch_size):
             image = self.im_set[self._idx]
             image = image.astype(np.float32)/255.
+            '''
             if self.randomize:
                 #bg_value = np.median(image)
                 
@@ -76,13 +77,14 @@ class DataLoaderH5(object):
                 #offset_h = np.random.random_integers(0, self.load_size-self.fine_size)
                 #offset_w = np.random.random_integers(0, self.load_size-self.fine_size)
             else:
-                image = image - self.data_mean
-                #offset_h = (self.load_size-self.fine_size)//2
-                #offset_w = (self.load_size-self.fine_size)//2
-                crop = self.fine_size
-                startx = image.shape[1]/2-(crop/2)
-                starty = image.shape[0]/2-(crop/2)
-                images_batch[i, ...] = image[starty:starty+crop,startx:startx+crop, :]
+            '''
+            image = image - self.data_mean
+            #offset_h = (self.load_size-self.fine_size)//2
+            #offset_w = (self.load_size-self.fine_size)//2
+            crop = self.fine_size
+            startx = image.shape[1]/2-(crop/2)
+            starty = image.shape[0]/2-(crop/2)
+            images_batch[i, ...] = image[starty:starty+crop,startx:startx+crop, :]
                 #images_batch[i, ...] = scipy.misc.imresize(image, (self.fine_size,self.fine_size))            labels_batch[i, ...] = self.lab_set[self._idx]
             
             labels_batch[i, ...] = self.lab_set[self._idx]
