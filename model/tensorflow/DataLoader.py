@@ -41,7 +41,7 @@ class DataLoaderH5(object):
                 #shiftx = np.random.randint(-10, 10, 1)
                 #shifty = np.random.randint(-10, 10, 1)
                 #image = scipy.ndimage.shift(image,[shiftx, shifty, 0], cval=bg_value)
-            
+                '''
                 s_vs_p = 0.5
                 amount = 0.001
                 #out = np.copy(image)
@@ -54,7 +54,7 @@ class DataLoaderH5(object):
 
                 #angle = np.random.randint(-15,15,1)
                 #image = scipy.ndimage.rotate(image,angle,reshape=False)
-            
+                '''
                 if (np.random.randint(0, 1, 1)):
                     image = np.flip(image)
 
@@ -66,6 +66,7 @@ class DataLoaderH5(object):
 
                 #image = image[starty:starty+crop,startx:startx+crop, :]
                 #images_batch[i, ...] = scipy.ndimage.zoom(image, (float(self.fine_size)/image.shape[0],float(self.fine_size)/image.shape[1], 1.0))
+                
                 images_batch[i, ...] = image[starty:starty+crop,startx:startx+crop, :]
                 #images_batch[i, ...] = image.repeat(zoom, 0).repeat(zoom, 1)
 
