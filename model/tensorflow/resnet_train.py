@@ -24,7 +24,7 @@ if not os.path.exists(path_save):
     os.makedirs(path_save)
 
 start_from = './resnet18/-5000'
-
+start_step = 5000
 
 
 # Construct dataloader
@@ -91,7 +91,7 @@ with tf.Session() as sess:
     else:
         sess.run(init)
 
-    step = 0
+    step = 5000
     while True:
         training_step = 0
         async_result = pool.apply_async(loader_train.next_batch, [batch_size])
