@@ -70,7 +70,7 @@ class DataLoaderH5(object):
                 #image = scipy.ndimage.rotate(image,angle,reshape=False)
                 
                 if (np.random.randint(0, 1, 1)):
-                    image = np.flip(image)
+                    image = image[:,::-1,:]
 
                 #zoom = 1 #np.random.choice([1, 2])
                 #crop = self.fine_size / zoom
@@ -119,7 +119,7 @@ class DataLoaderH5(object):
 
     def shuffle(self):
         perm = np.random.permutation(self.num)
-        self.im_set = self.im_set[perm] 
+        self.im_set = self.im_set[perm]' 
         self.lab_set = self.lab_set[perm]
 
 # Loading data from disk
