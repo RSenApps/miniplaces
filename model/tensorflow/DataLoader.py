@@ -41,7 +41,7 @@ class DataLoaderH5(object):
                 #shiftx = np.random.randint(-10, 10, 1)
                 #shifty = np.random.randint(-10, 10, 1)
                 #image = scipy.ndimage.shift(image,[shiftx, shifty, 0], cval=bg_value)
-                '''
+                
                 s_vs_p = 0.5
                 amount = 0.001
                 #out = np.copy(image)
@@ -49,7 +49,7 @@ class DataLoaderH5(object):
                 num_salt = np.ceil(amount * image.size * s_vs_p)
                 coords = [np.random.randint(0, j - 1, int(num_salt)) for j in image.shape]
                 image[coords] = 1
-                '''
+
                 image = image - self.data_mean
 
                 #angle = np.random.randint(-15,15,1)
