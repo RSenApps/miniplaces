@@ -1,31 +1,27 @@
-from collections import namedtuple
-
 import tensorflow as tf
+
 import numpy as np
-
-import utils
-
-
-HParams = namedtuple('HParams',
-                    'batch_size, num_gpus, num_classes, weight_decay, '
-                     'momentum, finetune')
-
-class ResNet(object):
-    def __init__(self, hp, images, labels, global_step, name=None, reuse_weights=False):
-        self._hp = hp # Hyperparameters
-        self._images = images # Input images
-        self._labels = labels # Input labels
-        self._global_step = global_step
-        self._name = name
-        self._reuse_weights = reuse_weights
-        self.lr = tf.placeholder(tf.float32, name="lr")
-        self.is_train = tf.placeholder(tf.bool, name="train_mode")
-        self._counted_scope = []
-        self._flops = 0
-        self._weights = 0
+from functools import reduce
+from tensorflow.contrib.layers.python.layers import batch_norm
 
 
-    def build_tower(self, images):
+
+class ResNet:
+    """
+    A trainable version VGG19.
+    """
+
+    def __init__(self, resnet_npy_path=None, trainable=True, dropout=0.5):
+        if resnet_npy_path is not None:
+            self.data_dict = np.load(resnet_npy_path, encoding='latin1').item()
+        else:
+            self.data_dict = None
+
+        self.var_dict = {}
+        self.trainable = trainable
+        self.dropout = dropout
+
+    def build_tower(self, images, train_mode = None):
         print('Building model')
         # filters = [128, 128, 256, 512, 1024]
         filters = [64, 64, 128, 256, 512]
@@ -35,40 +31,39 @@ class ResNet(object):
         # conv1
         print('\tBuilding unit: conv1')
         with tf.variable_scope('conv1'):
-            x = self._conv(images, kernels[0], filters[0], strides[0])
-            x = self._bn(x)
-            x = self._relu(x)
+            x = self.conv_layer(images, kernels[0],[1,strides[0],strides[0],1],3,filters[0],'conv0')
+            x = self.batch_norm_layer(x, train_mode, 'bn0')
+            x = tf.nn.relu(x)
             x = tf.nn.max_pool(x, [1, 3, 3, 1], [1, 2, 2, 1], 'SAME')
 
         # conv2_x
-        x = self._residual_block(x, name='conv2_1')
-        x = self._residual_block(x, name='conv2_2')
+        x = self._residual_block(x,train_mode,filters[0], name='conv2_1')
+        x = self._residual_block(x,train_mode,filters[0], name='conv2_2')
 
         # conv3_x
-        x = self._residual_block_first(x, filters[2], strides[2], name='conv3_1')
-        x = self._residual_block(x, name='conv3_2')
+        x = self._residual_block_first(x, train_mode,filters[0], filters[2], strides[2], name='conv3_1')
+        x = self._residual_block(x,train_mode, filters[2], name='conv3_2')
 
         # conv4_x
-        x = self._residual_block_first(x, filters[3], strides[3], name='conv4_1')
-        x = self._residual_block(x, name='conv4_2')
+        x = self._residual_block_first(x, train_mode,filters[2], filters[3], strides[3], name='conv4_1')
+        x = self._residual_block(x, train_mode, filters[3], name='conv4_2')
 
         # conv5_x
-        x = self._residual_block_first(x, filters[4], strides[4], name='conv5_1')
-        x = self._residual_block(x, name='conv5_2')
+        x = self._residual_block_first(x,train_mode, filters[3], filters[4], strides[4], name='conv5_1')
+        x = self._residual_block(x,train_mode,filters[4], name='conv5_2')
 
         # Logit
         with tf.variable_scope('logits') as scope:
             print('\tBuilding unit: %s' % scope.name)
             x = tf.reduce_mean(x, [1, 2])
-            x = self._fc(x, self._hp)
+            x = self.fc_layer(x, filters[4],1000,'fc')
 
         logits = x
 
         return logits
 
 
-    def _residual_block_first(self, x, out_channel, strides, name="unit"):
-        in_channel = x.get_shape().as_list()[-1]
+    def _residual_block_first(self, x,train_mode, in_channel, out_channel, strides, name="unit"):
         with tf.variable_scope(name) as scope:
             print('\tBuilding residual unit: %s' % scope.name)
 
@@ -79,119 +74,122 @@ class ResNet(object):
                 else:
                     shortcut = tf.nn.max_pool(x, [1, strides, strides, 1], [1, strides, strides, 1], 'VALID')
             else:
-                shortcut = self._conv(x, 1, out_channel, strides, name='shortcut')
+                shortcut = self.conv_layer(x, 1,[1, strides, strides, 1],in_channel,out_channel,'shortcut')
             # Residual
-            x = self._conv(x, 3, out_channel, strides, name='conv_1')
-            x = self._bn(x, name='bn_1')
-            x = self._relu(x, name='relu_1')
-            x = self._conv(x, 3, out_channel, 1, name='conv_2')
-            x = self._bn(x, name='bn_2')
+            x = self.conv_layer(x, 3,[1, strides, strides, 1],in_channel,out_channel,'conv_1')
+            x = self.batch_norm_layer(x, train_mode, 'bn_1')
+            x = tf.nn.relu(x)
+            x = self.conv_layer(x, 3,[1,1,1,1],out_channel,out_channel,'conv_2')
+            x = self.batch_norm_layer(x, train_mode, 'bn_2')
             # Merge
             x = x + shortcut
-            x = self._relu(x, name='relu_2')
+            x = tf.nn.relu(x)
         return x
 
 
-    def _residual_block(self, x, input_q=None, output_q=None, name="unit"):
-        num_channel = x.get_shape().as_list()[-1]
+    def _residual_block(self, x,train_mode, in_channel, input_q=None, output_q=None, name="unit"):
         with tf.variable_scope(name) as scope:
             print('\tBuilding residual unit: %s' % scope.name)
             # Shortcut connection
             shortcut = x
             # Residual
-            x = self._conv(x, 3, num_channel, 1, input_q=input_q, output_q=output_q, name='conv_1')
-            x = self._bn(x, name='bn_1')
-            x = self._relu(x, name='relu_1')
-            x = self._conv(x, 3, num_channel, 1, input_q=output_q, output_q=output_q, name='conv_2')
-            x = self._bn(x, name='bn_2')
+            x = self.conv_layer(x, 3,[1,1,1,1],in_channel,in_channel,'conv_1')
+            x = self.batch_norm_layer(x, train_mode,'bn_1')
+            x = tf.nn.relu(x)
+            x = self.conv_layer(x, 3,[1,1,1,1],in_channel,in_channel,'conv_2')
+            x = self.batch_norm_layer(x, train_mode,'bn_2')
 
             x = x + shortcut
-            x = self._relu(x, name='relu_2')
+            x = tf.nn.relu(x)
         return x
 
 
-    def _average_gradients(self, tower_grads):
-        """Calculate the average gradient for each shared variable across all towers.
+    def batch_norm_layer(self, x, train_phase, scope_bn):
+        return batch_norm(x, decay=0.9, center=True, scale=True,
+                    updates_collections=None,
+                    is_training=train_phase,
+                    reuse=None,
+                    trainable=True,
+                    scope=scope_bn)
 
-        Note that this function provides a synchronization point across all towers.
+    def avg_pool(self, bottom, name):
+        return tf.nn.avg_pool(bottom, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='SAME', name=name)
 
-        Args:
-          tower_grads: List of lists of (gradient, variable) tuples. The outer list
-            is over individual gradients. The inner list is over the gradient
-            calculation for each tower.
-        Returns:
-           List of pairs of (gradient, variable) where the gradient has been averaged
-           across all towers.
-        """
-        average_grads = []
-        for grad_and_vars in zip(*tower_grads):
-            # If no gradient for a variable, exclude it from output
-            if grad_and_vars[0][0] is None:
-                continue
+    def max_pool(self, bottom, name):
+        return tf.nn.max_pool(bottom, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='SAME', name=name)
 
-            # Note that each grad_and_vars looks like the following:
-            #   ((grad0_gpu0, var0_gpu0), ... , (grad0_gpuN, var0_gpuN))
-            grads = []
-            for g, _ in grad_and_vars:
-                # Add 0 dimension to the gradients to represent the tower.
-                expanded_g = tf.expand_dims(g, 0)
+    def conv_layer(self, bottom, filter_size, stride, in_channels, out_channels, name):
+        with tf.variable_scope(name):
+            filt, conv_biases = self.get_conv_var(filter_size, in_channels, out_channels, name)
 
-                # Append on a 'tower' dimension which we will average over below.
-                grads.append(expanded_g)
+            conv = tf.nn.conv2d(bottom, filt, stride, padding='SAME')
+            bias = tf.nn.bias_add(conv, conv_biases)
+            relu = tf.nn.relu(bias)
 
-            # Average over the 'tower' dimension.
-            grad = tf.concat(grads, 0)
-            grad = tf.reduce_mean(grad, 0)
+            return relu
 
-            # Keep in mind that the Variables are redundant because they are shared
-            # across towers. So .. we will just return the first tower's pointer to
-            # the Variable.
-            v = grad_and_vars[0][1]
-            grad_and_var = (grad, v)
-            average_grads.append(grad_and_var)
+    def fc_layer(self, bottom, in_size, out_size, name):
+        with tf.variable_scope(name):
+            weights, biases = self.get_fc_var(in_size, out_size, name)
 
-        return average_grads
+            x = tf.reshape(bottom, [-1, in_size])
+            fc = tf.nn.bias_add(tf.matmul(x, weights), biases)
 
+            return fc
 
-    # Helper functions(counts FLOPs and number of weights)
-    def _conv(self, x, filter_size, out_channel, stride, pad="SAME", input_q=None, output_q=None, name="conv"):
-        b, h, w, in_channel = x.get_shape().as_list()
-        x = utils._conv(x, filter_size, out_channel, stride, pad, input_q, output_q, name)
-        f = 2 * (h/stride) * (w/stride) * in_channel * out_channel * filter_size * filter_size
-        w = in_channel * out_channel * filter_size * filter_size
-        scope_name = tf.get_variable_scope().name + "/" + name
-        self._add_flops_weights(scope_name, f, w)
-        return x
+    def get_conv_var(self, filter_size, in_channels, out_channels, name):
+        initial_value = tf.truncated_normal([filter_size, filter_size, in_channels, out_channels], 0.0, 0.001)
+        filters = self.get_var(initial_value, name, 0, name + "_filters")
 
-    def _fc(self, x, out_dim, input_q=None, output_q=None, name="fc"):
-        b, in_dim = x.get_shape().as_list()
-        x = utils._fc(x, out_dim, input_q, output_q, name)
-        f = 2 * (in_dim + 1) * out_dim
-        w = (in_dim + 1) * out_dim
-        scope_name = tf.get_variable_scope().name + "/" + name
-        self._add_flops_weights(scope_name, f, w)
-        return x
+        initial_value = tf.truncated_normal([out_channels], .0, .001)
+        biases = self.get_var(initial_value, name, 1, name + "_biases")
 
-    def _bn(self, x, name="bn"):
-        x = utils._bn(x, self.is_train, self._global_step, name)
-        # f = 8 * self._get_data_size(x)
-        # w = 4 * x.get_shape().as_list()[-1]
-        # scope_name = tf.get_variable_scope().name + "/" + name
-        # self._add_flops_weights(scope_name, f, w)
-        return x
+        return filters, biases
 
-    def _relu(self, x, name="relu"):
-        x = utils._relu(x, 0.0, name)
-        # f = self._get_data_size(x)
-        # scope_name = tf.get_variable_scope().name + "/" + name
-        # self._add_flops_weights(scope_name, f, 0)
-        return x
+    def get_fc_var(self, in_size, out_size, name):
+        initial_value = tf.truncated_normal([in_size, out_size], 0.0, 0.001)
+        weights = self.get_var(initial_value, name, 0, name + "_weights")
 
-    def _get_data_size(self, x):
-        return np.prod(x.get_shape().as_list()[1:])
+        initial_value = tf.truncated_normal([out_size], .0, .001)
+        biases = self.get_var(initial_value, name, 1, name + "_biases")
 
-    def _add_flops_weights(self, scope_name, f, w):
-        if scope_name not in self._counted_scope:
-            self._flops += f
-            self._weights += w
-            self._counted_scope.append(scope_name)
+        return weights, biases
+
+    def get_var(self, initial_value, name, idx, var_name):
+        if self.data_dict is not None and name in self.data_dict:
+            value = self.data_dict[name][idx]
+        else:
+            value = initial_value
+
+        if self.trainable:
+            var = tf.Variable(value, name=var_name)
+        else:
+            var = tf.constant(value, dtype=tf.float32, name=var_name)
+
+        self.var_dict[(name, idx)] = var
+
+        # print var_name, var.get_shape().as_list()
+        assert var.get_shape() == initial_value.get_shape()
+
+        return var
+
+    def save_npy(self, sess, npy_path="./vgg19-save.npy"):
+        assert isinstance(sess, tf.Session)
+
+        data_dict = {}
+
+        for (name, idx), var in list(self.var_dict.items()):
+            var_out = sess.run(var)
+            if name not in data_dict:
+                data_dict[name] = {}
+            data_dict[name][idx] = var_out
+
+        np.save(npy_path, data_dict)
+        print(("file saved", npy_path))
+        return npy_path
+
+    def get_var_count(self):
+        count = 0
+        for v in list(self.var_dict.values()):
+            count += reduce(lambda x, y: x * y, v.get_shape().as_list())
+        return count
