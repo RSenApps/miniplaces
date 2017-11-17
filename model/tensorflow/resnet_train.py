@@ -71,7 +71,8 @@ loss = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(labels=y, l
 regularizer = tf.contrib.layers.l2_regularizer(scale=weight_decay)
 reg_variables = tf.get_collection(tf.GraphKeys.REGULARIZATION_LOSSES)
 reg_term = tf.contrib.layers.apply_regularization(regularizer, reg_variables)
-loss += reg_term
+reg_constant = 0.01
+loss += reg_constant * reg_term
 
 #train_optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(loss)
 global_step = tf.Variable(0,trainable=False)
