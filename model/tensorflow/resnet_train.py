@@ -19,6 +19,8 @@ training_iters = 5000
 step_display = 100
 step_save = 5000
 path_save = './resnet18/'
+weight_decay = .01
+momentum = .9
 
 if not os.path.exists(path_save):
     os.makedirs(path_save)
@@ -66,12 +68,17 @@ logits = res.build_tower(x,train_mode)
 loss = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(labels=y, logits=logits))
 #cost = -tf.reduce_sum(y*tf.log(logits))
 
+regularizer = tf.contrib.layers.l2_regularizer(scale=weight_decay)
+reg_variables = tf.get_collection(tf.GraphKeys.REGULARIZATION_LOSSES)
+reg_term = tf.contrib.layers.apply_regularization(regularizer, reg_variables)
+loss += reg_term
+
 #train_optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(loss)
 global_step = tf.Variable(0,trainable=False)
 boundaries = [10000,20000]
 values = [.1,.01,.001]
 learning_rate = tf.train.piecewise_constant(global_step,boundaries,values)
-train_optimizer = tf.train.GradientDescentOptimizer(learning_rate=learning_rate).minimize(loss,global_step=global_step)
+train_optimizer = tf.train.MomentumOptimizer(learning_rate=learning_rate, momentum=momentum, use_nesterov=True).minimize(loss, global_step=global_step)
 # Evaluate model
 accuracy1 = tf.reduce_mean(tf.cast(tf.nn.in_top_k(logits, y, 1), tf.float32))
 accuracy5 = tf.reduce_mean(tf.cast(tf.nn.in_top_k(logits, y, 5), tf.float32))

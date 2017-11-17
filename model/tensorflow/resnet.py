@@ -110,6 +110,7 @@ class ResNet:
                     is_training=train_phase,
                     reuse=None,
                     trainable=True,
+                    fused = True,
                     scope=scope_bn)
 
     def avg_pool(self, bottom, name):
@@ -163,6 +164,7 @@ class ResNet:
 
         if self.trainable:
             var = tf.Variable(value, name=var_name)
+            tf.add_to_collection(tf.GraphKeys.REGULARIZATION_LOSSES, var)
         else:
             var = tf.constant(value, dtype=tf.float32, name=var_name)
 
