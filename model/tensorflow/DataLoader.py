@@ -56,21 +56,21 @@ class DataLoaderH5(object):
                 amount = 0.001
                 #out = np.copy(image)
                 # Salt mode
-                '''
+                
                 num_salt = np.ceil(amount * image.size * s_vs_p)
                 coords = [np.random.randint(0, j - 1, int(num_salt)) for j in image.shape]
                 image[coords] = 1
-                '''
                 
+
                 image = self.augment_brightness_camera_images(image)
 
                 image = image - self.data_mean
 
-                '''
+                
                 angle = np.random.randint(-15,15,1)
                 M = cv2.getRotationMatrix2D((self.fine_size/2,self.fine_size/2),angle,1)
                 image = cv2.warpAffine(image,M,(self.fine_size,self.fine_size))
-                '''
+                
                 #image = scipy.ndimage.rotate(image,angle,reshape=False)
                 
                 if (np.random.randint(0, 1, 1)):

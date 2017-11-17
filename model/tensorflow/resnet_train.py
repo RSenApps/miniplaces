@@ -19,7 +19,7 @@ training_iters = 5000
 step_display = 100
 step_save = 5000
 path_save = './resnet18/'
-weight_decay = .01
+weight_decay = .005
 momentum = .9
 
 if not os.path.exists(path_save):
@@ -71,8 +71,7 @@ loss = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(labels=y, l
 regularizer = tf.contrib.layers.l2_regularizer(scale=weight_decay)
 reg_variables = tf.get_collection(tf.GraphKeys.REGULARIZATION_LOSSES)
 reg_term = tf.contrib.layers.apply_regularization(regularizer, reg_variables)
-reg_constant = 0.01
-loss += reg_constant * reg_term
+loss += reg_term
 
 #train_optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(loss)
 global_step = tf.Variable(0,trainable=False)
