@@ -92,7 +92,7 @@ saver = tf.train.Saver()
 # define summary writer
 #writer = tf.train.SummaryWriter('.', graph=tf.get_default_graph())
 print('working')
-pool = ThreadPool(processes=6)
+pool = ThreadPool(processes=1)
 
 # Launch the graph
 with tf.Session() as sess:
@@ -105,14 +105,11 @@ with tf.Session() as sess:
     step = start_step
     while True:
         training_step = 0
-        async_results = [0] * 6
-        for z in range(6):
-            async_results[z] = (pool.apply_async(loader_train.next_batch, [batch_size]))
-
+        async_result = pool.apply_async(loader_train.next_batch, [batch_size])
         while training_step < training_iters:
             # Load a batch of training data
-            images_batch, labels_batch = async_results[training_step%6].get()  #loader_train.next_batch(batch_size)
-            async_results[training_step%6] = pool.apply_async(loader_train.next_batch, [batch_size])
+            images_batch, labels_batch = async_result.get()  #loader_train.next_batch(batch_size)
+            async_result = pool.apply_async(loader_train.next_batch, [batch_size])
             #images_batch, labels_batch = loader_train.next_batch(batch_size)
 
             if step % step_display == 0:
