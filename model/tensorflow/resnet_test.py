@@ -80,7 +80,7 @@ values = [.1,.01,.001]
 learning_rate = tf.train.piecewise_constant(global_step,boundaries,values)
 train_optimizer = tf.train.MomentumOptimizer(learning_rate=learning_rate, momentum=momentum, use_nesterov=True).minimize(loss, global_step=global_step)
 # Evaluate model
-top5 = tf.cast(tf.nn.in_top_k(logits, y, 1), tf.float32)
+top5 = tf.nn.top_k(logits,k=1,sorted=True)
 accuracy1 = tf.reduce_mean(tf.cast(tf.nn.in_top_k(logits, y, 1), tf.float32))
 accuracy5 = tf.reduce_mean(tf.cast(tf.nn.in_top_k(logits, y, 5), tf.float32))
 
@@ -104,16 +104,12 @@ with tf.Session() as sess:
         sess.run(init)
 
     # Evaluate on the whole test set
-    print('Evaluation on the whole validation set...')
+    print('Evaluation on the whole test set...')
     num_batch = loader_val.size()//batch_size
     acc1_total = 0.
     acc5_total = 0.
     loader_val.reset()
     for i in range(num_batch):
         images_batch, labels_batch = loader_val.next_batch(batch_size)
-        acc1, acc5 = sess.run([top5, accuracy5], feed_dict={x: images_batch, y: labels_batch, train_mode: False})
-        acc1_total += acc1
-        acc5_total += acc5
-        print("Validation Accuracy Top1 = " + \
-              top5 + ", Top5 = " + \
-              "{:.2f}".format(acc5))
+        vals5, indices5 = sess.run([top5], feed_dict={x: images_batch, train_mode: False})
+        print("test/" + str(i).zfill(8) + ".jpg") + " ".join(str(x) for x in indices5))
