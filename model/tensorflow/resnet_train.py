@@ -14,12 +14,12 @@ data_mean = np.asarray([0.45834960097,0.44674252445,0.41352266842])
 
 # Training Parameters
 learning_rate = 0.002
-dropout = 0.5 # Dropout, probability to keep units
-training_iters = 1000
+dropout = 0.3 # Dropout, probability to keep units
+training_iters = 500
 step_display = 100
 step_save = 1000
 path_save = './resnet18/'
-weight_decay = .005
+weight_decay = .002
 momentum = .9
 
 if not os.path.exists(path_save):
