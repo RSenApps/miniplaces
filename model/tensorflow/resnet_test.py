@@ -111,5 +111,6 @@ with tf.Session() as sess:
     loader_val.reset()
     for i in range(num_batch):
         images_batch, labels_batch = loader_val.next_batch(batch_size)
-        vals5, indices5 = sess.run([top5], feed_dict={x: images_batch, train_mode: False})
-        print("test/" + str(i).zfill(8) + ".jpg" + " ".join(str(x) for x in indices5))
+        t5 = sess.run([top5], feed_dict={x: images_batch, train_mode: False})
+        print(t5)
+        #print("test/" + str(i).zfill(8) + ".jpg" + " ".join(str(x) for x in top5))
