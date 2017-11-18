@@ -13,14 +13,17 @@ c = 3
 data_mean = np.asarray([0.45834960097,0.44674252445,0.41352266842])
 
 # Training Parameters
-learning_rate = 0.002
+learning_rate = 0.1
+learning_rate_decay = .8
 dropout = 0.5 # Dropout, probability to keep units
 training_iters = 5000
 step_display = 100
 step_save = 5000
 path_save = './resnet18/'
-weight_decay = .002
+weight_decay = .003
 momentum = .9
+
+print('learning_rate: ', learning_rate, ' decay: ', learning_rate_decay, ' momentum: ', momentum, ' weight_decay: ', weight_decay)
 
 if not os.path.exists(path_save):
     os.makedirs(path_save)
@@ -75,9 +78,11 @@ loss += reg_term
 
 #train_optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(loss)
 global_step = tf.Variable(0,trainable=False)
-boundaries = [5000,10000]
-values = [.1,.01,.001]
-learning_rate = tf.train.piecewise_constant(global_step,boundaries,values)
+#boundaries = [5000,10000]
+#values = [.1,.01,.001]
+#learning_rate = tf.train.piecewise_constant(global_step,boundaries,values)
+learning_rate = tf.train.exponential_decay(learning_rate, global_step,
+                                           1000, learning_rate_decay, staircase=True)
 train_optimizer = tf.train.MomentumOptimizer(learning_rate=learning_rate, momentum=momentum, use_nesterov=True).minimize(loss, global_step=global_step)
 # Evaluate model
 accuracy1 = tf.reduce_mean(tf.cast(tf.nn.in_top_k(logits, y, 1), tf.float32))
