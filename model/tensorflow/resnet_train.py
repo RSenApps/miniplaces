@@ -19,7 +19,7 @@ training_iters = 5000
 step_display = 100
 step_save = 5000
 path_save = './resnet18/'
-weight_decay = .005
+weight_decay = .002
 momentum = .9
 
 if not os.path.exists(path_save):
@@ -75,7 +75,7 @@ loss += reg_term
 
 #train_optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(loss)
 global_step = tf.Variable(0,trainable=False)
-boundaries = [10000,20000]
+boundaries = [5000,10000]
 values = [.1,.01,.001]
 learning_rate = tf.train.piecewise_constant(global_step,boundaries,values)
 train_optimizer = tf.train.MomentumOptimizer(learning_rate=learning_rate, momentum=momentum, use_nesterov=True).minimize(loss, global_step=global_step)
