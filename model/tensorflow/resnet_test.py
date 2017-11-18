@@ -80,7 +80,7 @@ values = [.1,.01,.001]
 learning_rate = tf.train.piecewise_constant(global_step,boundaries,values)
 train_optimizer = tf.train.MomentumOptimizer(learning_rate=learning_rate, momentum=momentum, use_nesterov=True).minimize(loss, global_step=global_step)
 # Evaluate model
-top5 = tf.nn.top_k(logits,k=1,sorted=True)
+top5 = tf.nn.top_k(logits,k=5,sorted=True)
 accuracy1 = tf.reduce_mean(tf.cast(tf.nn.in_top_k(logits, y, 1), tf.float32))
 accuracy5 = tf.reduce_mean(tf.cast(tf.nn.in_top_k(logits, y, 5), tf.float32))
 
@@ -112,5 +112,5 @@ with tf.Session() as sess:
     for i in range(num_batch):
         images_batch, labels_batch = loader_val.next_batch(batch_size)
         t5 = sess.run([top5], feed_dict={x: images_batch, train_mode: False})
-        print(t5)
+        print(t5[1])
         #print("test/" + str(i).zfill(8) + ".jpg" + " ".join(str(x) for x in top5))
