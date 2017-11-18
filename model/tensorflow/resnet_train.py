@@ -17,10 +17,12 @@ learning_rate = 0.1
 learning_rate_decay = .8
 dropout = 0.5 # Dropout, probability to keep units
 training_iters = 5000
+
 step_display = 100
-step_save = 5000
+step_save = 1000
 path_save = './resnet18/'
 weight_decay = .003
+
 momentum = .9
 
 print('learning_rate: ', learning_rate, ' decay: ', learning_rate_decay, ' momentum: ', momentum, ' weight_decay: ', weight_decay)
