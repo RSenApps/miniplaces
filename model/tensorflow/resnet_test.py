@@ -25,7 +25,7 @@ momentum = .9
 if not os.path.exists(path_save):
     os.makedirs(path_save)
 
-start_from = './resnet18-Friday-830/-25000'
+start_from = './resnet18-Friday-830/-15000'
 start_step = 0 #5000
 
 
@@ -112,4 +112,4 @@ with tf.Session() as sess:
     for i in range(num_batch):
         images_batch, labels_batch = loader_val.next_batch(batch_size)
         t5 = sess.run([top5], feed_dict={x: images_batch, train_mode: False})
-        print("test/" + str(i).zfill(8) + ".jpg " + " ".join(str(x) for x in t5[0].indices[0]))
+        print("test/" + str(i+1).zfill(8) + ".jpg " + " ".join(str(x) for x in t5[0].indices[0]))
