@@ -84,7 +84,7 @@ boundaries = [5000,10000]
 values = [.1,.01,.001]
 learning_rate = tf.train.piecewise_constant(global_step,boundaries,values)
 #learning_rate = tf.train.exponential_decay(learning_rate, global_step,
-                                           1000, learning_rate_decay, staircase=True)
+#                                           1000, learning_rate_decay, staircase=True)
 train_optimizer = tf.train.MomentumOptimizer(learning_rate=learning_rate, momentum=momentum, use_nesterov=True).minimize(loss, global_step=global_step)
 # Evaluate model
 accuracy1 = tf.reduce_mean(tf.cast(tf.nn.in_top_k(logits, y, 1), tf.float32))
