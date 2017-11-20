@@ -28,6 +28,8 @@ class ResNet:
         kernels = [7, 3, 3, 3, 3]
         strides = [2, 0, 2, 2, 2]
 
+        resnet34 = True
+
         # conv1
         print('\tBuilding unit: conv1')
         with tf.variable_scope('conv1'):
@@ -39,22 +41,31 @@ class ResNet:
         # conv2_x
         x = self._residual_block(x,train_mode,filters[0], name='conv2_1')
         x = self._residual_block(x,train_mode,filters[0], name='conv2_2')
+        if resnet34:
+            x = self._residual_block(x,train_mode,filters[0], name='conv2_3')
+
 
         # conv3_x
         x = self._residual_block_first(x, train_mode,filters[0], filters[2], strides[2], name='conv3_1')
         x = self._residual_block(x,train_mode, filters[2], name='conv3_2')
         x = self._residual_block(x,train_mode, filters[2], name='conv3_3')  #added
-
+        if resnet34:
+            x = self._residual_block(x, train_mode, filters[2], name='conv3_4')
 
         # conv4_x
         x = self._residual_block_first(x, train_mode,filters[2], filters[3], strides[3], name='conv4_1')
         x = self._residual_block(x, train_mode, filters[3], name='conv4_2')
         x = self._residual_block(x, train_mode, filters[3], name='conv4_3') #added
         x = self._residual_block(x, train_mode, filters[3], name='conv4_4') #added
+        if resnet34:
+            x = self._residual_block(x, train_mode, filters[2], name='conv4_5')
+            x = self._residual_block(x, train_mode, filters[2], name='conv4_6')
 
         # conv5_x
         x = self._residual_block_first(x,train_mode, filters[3], filters[4], strides[4], name='conv5_1')
         x = self._residual_block(x,train_mode,filters[4], name='conv5_2')
+        if resnet34:
+            x = self._residual_block(x, train_mode, filters[4], name='conv5_3')
 
         # Logit
         with tf.variable_scope('logits') as scope:

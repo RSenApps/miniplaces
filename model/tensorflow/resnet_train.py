@@ -13,14 +13,14 @@ c = 3
 data_mean = np.asarray([0.45834960097,0.44674252445,0.41352266842])
 
 # Training Parameters
-learning_rate = 0.1
+learning_rate = 0.01
 learning_rate_decay = .8
 dropout = 0.5 # Dropout, probability to keep units
 training_iters = 1000
 
 step_display = 100
 step_save = 1000
-path_save = './resnet18/'
+path_save = './resnet34/'
 weight_decay = 0.0001
 
 momentum = .9
@@ -80,8 +80,8 @@ loss += reg_term
 
 #train_optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(loss)
 global_step = tf.Variable(0,trainable=False)
-boundaries = [15000,25000]
-values = [.1,.01,.001]
+boundaries = [20000, 30000]
+values = [.01,.001,.0001]
 learning_rate = tf.train.piecewise_constant(global_step,boundaries,values)
 #learning_rate = tf.train.exponential_decay(learning_rate, global_step,
 #                                           1000, learning_rate_decay, staircase=True)
