@@ -143,9 +143,14 @@ class DataLoaderH5(object):
         self._idx = 0
 
     def shuffle(self):
-        perm = np.random.permutation(self.num)
-        self.im_set = self.im_set[perm]
-        self.lab_set = self.lab_set[perm]
+        #perm = np.random.permutation(self.num)
+        #self.im_set = self.im_set[perm]
+        #self.lab_set = self.lab_set[perm]
+        rng_state = np.random.get_state()
+        np.random.shuffle(self.im_set)
+        np.random.set_state(rng_state)
+        np.random.shuffle(self.lab_set)
+
 
 # Loading data from disk
 class DataLoaderDisk(object):
