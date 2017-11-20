@@ -13,7 +13,7 @@ c = 3
 data_mean = np.asarray([0.45834960097,0.44674252445,0.41352266842])
 
 # Training Parameters
-learning_rate = 0.05
+learning_rate = 0.1
 learning_rate_decay = .8
 dropout = 0.5 # Dropout, probability to keep units
 training_iters = 1000
@@ -21,7 +21,7 @@ training_iters = 1000
 step_display = 100
 step_save = 1000
 path_save = './resnet18/'
-weight_decay = .003
+weight_decay = 0.0001
 
 momentum = .9
 

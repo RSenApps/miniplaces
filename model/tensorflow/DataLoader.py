@@ -3,6 +3,7 @@ import numpy as np
 import scipy.misc
 import h5py
 import cv2
+import tensorflow as tf
 np.random.seed(123)
 
 # loading data from .h5
@@ -51,7 +52,7 @@ class DataLoaderH5(object):
                 #shiftx = np.random.randint(-10, 10, 1)
                 #shifty = np.random.randint(-10, 10, 1)
                 #image = scipy.ndimage.shift(image,[shiftx, shifty, 0], cval=bg_value)
-                
+                '''
                 s_vs_p = 0.5
                 amount = 0.001
                 #out = np.copy(image)
@@ -60,19 +61,30 @@ class DataLoaderH5(object):
                 num_salt = np.ceil(amount * image.size * s_vs_p)
                 coords = [np.random.randint(0, j - 1, int(num_salt)) for j in image.shape]
                 image[coords] = 1
-                
+                '''
 
-                image = self.augment_brightness_camera_images(image)
+                #image = self.augment_brightness_camera_images(image)
+                crop = np.random.randint(90 if self.fine_size == 112 else 180, self.fine_size, 1)[0]
+                startx = np.random.randint(0, self.load_size - (crop))
+                starty = np.random.randint(0, self.load_size - (crop))
 
-                image = image - self.data_mean
+                image = tf.image.crop_to_bounding_box(image, startx, starty, crop, crop)
+                image = tf.image.resize_images(image, [self.fine_size, self.fine_size])
+                image = tf.image.random_flip_left_right(image)
+                image = tf.image.random_hue(image, .25)
+                image = tf.image.random_brightness(image, max_delta = .4)
+                image = tf.image.random_contrast(image, lower=.6, upper=1.4)
+                image = tf.image.random_saturation(image, lower=.6, upper=1.4)
 
-                
+                images_batch[i, ...] = image - self.data_mean
+
+                '''
                 angle = np.random.randint(-15,15,1)
                 M = cv2.getRotationMatrix2D((self.fine_size/2,self.fine_size/2),angle,1)
                 image = cv2.warpAffine(image,M,(self.fine_size,self.fine_size))
-                
+                '''
                 #image = scipy.ndimage.rotate(image,angle,reshape=False)
-                
+                '''
                 if (np.random.randint(0, 1, 1)):
                     image = image[:,::-1,:]
 
@@ -84,7 +96,8 @@ class DataLoaderH5(object):
 
                 image = image[starty:starty+crop,startx:startx+crop, :]
                 images_batch[i, ...] = cv2.resize(image, None, fx=float(self.fine_size)/image.shape[0], fy=float(self.fine_size)/image.shape[1],interpolation=cv2.INTER_CUBIC)
-                
+                '''
+
                 #images_batch[i, ...] = image[starty:starty+crop,startx:startx+crop, :]
                 #images_batch[i, ...] = image.repeat(zoom, 0).repeat(zoom, 1)
 
