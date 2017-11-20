@@ -43,10 +43,14 @@ class ResNet:
         # conv3_x
         x = self._residual_block_first(x, train_mode,filters[0], filters[2], strides[2], name='conv3_1')
         x = self._residual_block(x,train_mode, filters[2], name='conv3_2')
+        x = self._residual_block(x,train_mode, filters[2], name='conv3_3')  #added
+
 
         # conv4_x
         x = self._residual_block_first(x, train_mode,filters[2], filters[3], strides[3], name='conv4_1')
         x = self._residual_block(x, train_mode, filters[3], name='conv4_2')
+        x = self._residual_block(x, train_mode, filters[3], name='conv4_3') #added
+        x = self._residual_block(x, train_mode, filters[3], name='conv4_3') #added
 
         # conv5_x
         x = self._residual_block_first(x,train_mode, filters[3], filters[4], strides[4], name='conv5_1')
