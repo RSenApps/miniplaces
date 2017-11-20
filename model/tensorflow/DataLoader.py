@@ -67,7 +67,7 @@ class DataLoaderH5(object):
                 crop = np.random.randint(90 if self.fine_size == 112 else 180, self.fine_size, 1)[0]
                 startx = np.random.randint(0, self.load_size - (crop))
                 starty = np.random.randint(0, self.load_size - (crop))
-
+                image = image - self.data_mean
                 image = tf.image.crop_to_bounding_box(image, startx, starty, crop, crop)
                 image = tf.image.resize_images(image, [self.fine_size, self.fine_size])
                 image = tf.image.random_flip_left_right(image)
@@ -76,7 +76,7 @@ class DataLoaderH5(object):
                 image = tf.image.random_contrast(image, lower=.6, upper=1.4)
                 image = tf.image.random_saturation(image, lower=.6, upper=1.4)
 
-                images_batch[i, ...] = image - self.data_mean
+                images_batch[i, ...] = image
 
                 '''
                 angle = np.random.randint(-15,15,1)
