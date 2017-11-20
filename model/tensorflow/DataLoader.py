@@ -39,9 +39,16 @@ class DataLoaderH5(object):
         return image1
 
     def next_batch(self, batch_size):
+
         labels_batch = np.zeros(batch_size)
-        images_batch = np.zeros((batch_size, self.fine_size, self.fine_size, 3)) 
-        
+        images_batch = np.zeros((batch_size, self.fine_size, self.fine_size, 3))
+        '''
+        images, label_batch = tf.train.batch(
+            [],
+            batch_size=batch_size,
+            num_threads=1,
+            capacity= batch_size)
+        '''
         for i in range(batch_size):
             image = self.im_set[self._idx]
             image = image.astype(np.float32)/255.
@@ -62,8 +69,7 @@ class DataLoaderH5(object):
                 coords = [np.random.randint(0, j - 1, int(num_salt)) for j in image.shape]
                 image[coords] = 1
                 '''
-
-                #image = self.augment_brightness_camera_images(image)
+                '''
                 crop = np.random.randint(90 if self.fine_size == 112 else 180, self.fine_size, 1)[0]
                 startx = np.random.randint(0, self.load_size - (crop))
                 starty = np.random.randint(0, self.load_size - (crop))
@@ -79,24 +85,26 @@ class DataLoaderH5(object):
                 images_batch[i, ...] = image
 
                 '''
-                angle = np.random.randint(-15,15,1)
+
+                image = self.augment_brightness_camera_images(image)
+                image = image - self.data_mean
+
+                angle = np.random.randint(-30,30,1)
                 M = cv2.getRotationMatrix2D((self.fine_size/2,self.fine_size/2),angle,1)
                 image = cv2.warpAffine(image,M,(self.fine_size,self.fine_size))
-                '''
                 #image = scipy.ndimage.rotate(image,angle,reshape=False)
-                '''
+
                 if (np.random.randint(0, 1, 1)):
                     image = image[:,::-1,:]
 
                 #zoom = 1 #np.random.choice([1, 2])
                 #crop = self.fine_size / zoom
-                crop = np.random.randint(90 if self.fine_size == 112 else 180, self.fine_size, 1)[0]
+                crop = np.random.randint(self.fine_size / 2, self.fine_size, 1)[0]
                 startx = np.random.randint(0, image.shape[1]-(crop))
                 starty = np.random.randint(0, image.shape[0]-(crop))
 
                 image = image[starty:starty+crop,startx:startx+crop, :]
                 images_batch[i, ...] = cv2.resize(image, None, fx=float(self.fine_size)/image.shape[0], fy=float(self.fine_size)/image.shape[1],interpolation=cv2.INTER_CUBIC)
-                '''
 
                 #images_batch[i, ...] = image[starty:starty+crop,startx:startx+crop, :]
                 #images_batch[i, ...] = image.repeat(zoom, 0).repeat(zoom, 1)
