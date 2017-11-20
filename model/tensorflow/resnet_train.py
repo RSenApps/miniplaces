@@ -6,7 +6,7 @@ import resnet
 from multiprocessing.pool import ThreadPool
 
 # Dataset Parameters
-batch_size = 128
+batch_size = 256
 load_size = 256
 fine_size = 224
 c = 3
@@ -80,10 +80,10 @@ loss += reg_term
 
 #train_optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(loss)
 global_step = tf.Variable(0,trainable=False)
-#boundaries = [5000,10000]
-#values = [.1,.01,.001]
-#learning_rate = tf.train.piecewise_constant(global_step,boundaries,values)
-learning_rate = tf.train.exponential_decay(learning_rate, global_step,
+boundaries = [5000,10000]
+values = [.1,.01,.001]
+learning_rate = tf.train.piecewise_constant(global_step,boundaries,values)
+#learning_rate = tf.train.exponential_decay(learning_rate, global_step,
                                            1000, learning_rate_decay, staircase=True)
 train_optimizer = tf.train.MomentumOptimizer(learning_rate=learning_rate, momentum=momentum, use_nesterov=True).minimize(loss, global_step=global_step)
 # Evaluate model
