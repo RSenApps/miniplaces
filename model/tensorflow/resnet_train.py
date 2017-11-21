@@ -21,7 +21,7 @@ training_iters = 1000
 step_display = 100
 step_save = 1000
 path_save = './resnet34/'
-weight_decay = 0.0001
+weight_decay = 0.00001
 
 momentum = .9
 
