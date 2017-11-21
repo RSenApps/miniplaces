@@ -21,7 +21,7 @@ training_iters = 1000
 step_display = 100
 step_save = 1000
 path_save = './resnet34/'
-weight_decay = 0.00001
+weight_decay = 0.01
 
 momentum = .9
 
@@ -76,12 +76,13 @@ loss = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(labels=y, l
 regularizer = tf.contrib.layers.l2_regularizer(scale=weight_decay)
 reg_variables = tf.get_collection(tf.GraphKeys.REGULARIZATION_LOSSES)
 reg_term = tf.contrib.layers.apply_regularization(regularizer, reg_variables)
-loss += reg_term
+reg_constant = .1
+loss += reg_constant * reg_term
 
 #train_optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(loss)
 global_step = tf.Variable(0,trainable=False)
-boundaries = [20000, 30000]
-values = [.01,.001,.0001]
+boundaries = [10000, 20000]
+values = [.1,.01,.001]
 learning_rate = tf.train.piecewise_constant(global_step,boundaries,values)
 #learning_rate = tf.train.exponential_decay(learning_rate, global_step,
 #                                           1000, learning_rate_decay, staircase=True)
