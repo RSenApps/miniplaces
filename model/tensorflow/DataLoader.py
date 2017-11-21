@@ -89,9 +89,9 @@ class DataLoaderH5(object):
                 image = self.augment_brightness_camera_images(image)
                 image = image - self.data_mean
 
-                angle = np.random.randint(-30,30,1)
-                M = cv2.getRotationMatrix2D((self.fine_size/2,self.fine_size/2),angle,1)
-                image = cv2.warpAffine(image,M,(self.fine_size,self.fine_size))
+                # angle = np.random.randint(-30,30,1)
+                # M = cv2.getRotationMatrix2D((self.fine_size/2,self.fine_size/2),angle,1)
+                # image = cv2.warpAffine(image,M,(self.fine_size,self.fine_size))
                 #image = scipy.ndimage.rotate(image,angle,reshape=False)
 
                 if (np.random.randint(0, 1, 1)):
@@ -99,14 +99,15 @@ class DataLoaderH5(object):
 
                 #zoom = 1 #np.random.choice([1, 2])
                 #crop = self.fine_size / zoom
-                crop = np.random.randint(self.fine_size / 2, self.fine_size, 1)[0]
+                #crop = np.random.randint(self.fine_size / 2, self.fine_size, 1)[0]
+                crop = self.fine_size
                 startx = np.random.randint(0, image.shape[1]-(crop))
                 starty = np.random.randint(0, image.shape[0]-(crop))
 
-                image = image[starty:starty+crop,startx:startx+crop, :]
-                images_batch[i, ...] = cv2.resize(image, None, fx=float(self.fine_size)/image.shape[0], fy=float(self.fine_size)/image.shape[1],interpolation=cv2.INTER_CUBIC)
+                #image = image[starty:starty+crop,startx:startx+crop, :]
+                #images_batch[i, ...] = cv2.resize(image, None, fx=float(self.fine_size)/image.shape[0], fy=float(self.fine_size)/image.shape[1],interpolation=cv2.INTER_CUBIC)
 
-                #images_batch[i, ...] = image[starty:starty+crop,startx:startx+crop, :]
+                images_batch[i, ...] = image[starty:starty+crop,startx:startx+crop, :]
                 #images_batch[i, ...] = image.repeat(zoom, 0).repeat(zoom, 1)
 
                 #offset_h = np.random.random_integers(0, self.load_size-self.fine_size)
